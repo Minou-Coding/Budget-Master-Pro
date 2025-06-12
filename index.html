@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire Intelligent de Budget</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #81FBB8 0%, #28C76F 100%);
+            --danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --dark: #0a0a0a;
+            --surface: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            background: var(--primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5)); }
+            to { filter: drop-shadow(0 0 30px rgba(118, 75, 162, 0.8)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .save-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            background: var(--success);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .save-status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .save-status.saving {
+            background: var(--accent);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group select option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text);
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .table td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.01);
+        }
+
+        .table td[contenteditable="true"] {
+            cursor: text;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .table td[contenteditable="true"]:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .table td[contenteditable="true"]:focus {
+            outline: 2px solid #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: var(--success);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            background: var(--success);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Responsive Design pour PC, Tablettes et Mobiles */
+        
+        /* Large Desktop (>1200px) */
+        @media (min-width: 1201px) {
+            .container {
+                max-width: 1600px;
+                padding: 3rem;
+            }
+            
+            .header h1 {
+                font-size: 5rem;
+            }
+            
+            .form-section {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Desktop (992px - 1200px) */
+        @media (min-width: 992px) and (max-width: 1200px) {
+            .container {
+                padding: 2.5rem;
+            }
+            
+            .form-section {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Tablettes Portrait (768px - 991px) */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .container {
+                padding: 2rem;
+            }
+
+            .header h1 {
+                font-size: 3.5rem;
+            }
+
+            .form-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .glass-card {
+                padding: 1.5rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 1rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .file-actions {
+                justify-content: center;
+                gap: 0.8rem;
+            }
+        }
+
+        /* Tablettes Paysage et petits laptops (576px - 767px) */
+        @media (min-width: 576px) and (max-width: 767px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 3rem;
+            }
+
+            .form-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .glass-card {
+                padding: 1.2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                border-radius: 15px;
+            }
+
+            .table {
+                min-width: 650px;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .delete-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 1rem;
+            }
+
+            .save-status {
+                top: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Mobiles (< 576px) */
+        @media (max-width: 575px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                margin-bottom: 2rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+                line-height: 1.1;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .form-section {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .input-group input,
+            .input-group select {
+                padding: 0.8rem;
+                font-size: 16px; /* Évite le zoom sur iOS */
+            }
+
+            .btn {
+                width: 100%;
+                padding: 1rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .glass-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 15px;
+            }
+
+            .file-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .search-input {
+                padding: 0.8rem 1rem;
+                font-size: 16px; /* Évite le zoom sur iOS */
+            }
+
+            .table-container {
+                overflow-x: auto;
+                border-radius: 10px;
+                margin: 0 -1rem;
+                margin-bottom: 1rem;
+            }
+
+            .table {
+                min-width: 600px;
+                font-size: 0.8rem;
+            }
+
+            .table th {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .table td {
+                padding: 0.8rem 0.5rem;
+            }
+
+            .table td[contenteditable="true"] {
+                min-width: 80px;
+            }
+
+            .delete-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .save-status {
+                top: 5px;
+                right: 5px;
+                left: 5px;
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+                text-align: center;
+                border-radius: 20px;
+            }
+        }
+
+        /* Très petits mobiles (< 360px) */
+        @media (max-width: 359px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 0.5rem;
+            }
+
+            .glass-card {
+                padding: 0.8rem;
+                border-radius: 10px;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+            }
+
+            .table {
+                min-width: 550px;
+                font-size: 0.75rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.6rem 0.4rem;
+            }
+        }
+
+        /* Orientation paysage sur mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header {
+                margin-bottom: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .glass-card {
+                padding: 0.8rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Amélioration des interactions tactiles */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 48px; /* Taille minimum recommandée pour le tactile */
+            }
+
+            .delete-btn {
+                min-height: 40px;
+                min-width: 40px;
+            }
+
+            .table td[contenteditable="true"] {
+                min-height: 40px;
+                line-height: 40px;
+            }
+
+            .input-group input,
+            .input-group select {
+                min-height: 48px;
+            }
+
+            .search-input {
+                min-height: 48px;
+            }
+        }
+
+        /* Mode sombre forcé sur certains appareils */
+        @media (prefers-color-scheme: dark) {
+            /* Le design est déjà sombre, mais on peut ajuster si nécessaire */
+        }
+
+        /* Réduction des animations pour les utilisateurs qui les préfèrent */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .glass-card::before,
+            .btn::before {
+                display: none;
+            }
+        }
+
+        /* Support pour les écrans haute densité */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .header h1 {
+                text-rendering: optimizeLegibility;
+            }
+        }
+
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="save-status" id="saveStatus">
+        💾 Sauvegardé automatiquement
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>💰 Budget Master Pro</h1>
+            <p class="subtitle">Gérez vos finances avec style et intelligence</p>
+        </div>
+
+        <div class="glass-card fade-in">
+            <div class="form-section">
+                <div class="input-group">
+                    <input id="titre" placeholder="Titre de l'opération">
+                </div>
+                <div class="input-group">
+                    <input id="montant" type="number" placeholder="Montant (€)">
+                </div>
+                <div class="input-group">
+                    <input id="date" placeholder="Date">
+                </div>
+                <div class="input-group">
+                    <select id="categorie">
+                        <option>Alimentation</option>
+                        <option>Loisirs</option>
+                        <option>Abonnements</option>
+                        <option>Transport</option>
+                        <option>Santé</option>
+                        <option>Éducation</option>
+                        <option>Autres</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="type">
+                        <option value="depense">💸 Dépense</option>
+                        <option value="revenu">💰 Revenu</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="ajouterOperation()">
+                ✨ Ajouter l'opération
+            </button>
+        </div>
+
+        <div class="glass-card fade-in search-section">
+            <input id="search" class="search-input" placeholder="🔍 Rechercher par titre, montant ou catégorie..." oninput="actualiserTableau()">
+        </div>
+
+        <div class="glass-card fade-in">
+            <div class="file-actions">
+                <input type="file" id="fileInput" class="file-input" onchange="importJSON(event)">
+                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click();">
+                    📥 Importer JSON
+                </button>
+                <button class="btn btn-accent" onclick="exportJSON()">
+                    📤 Exporter JSON
+                </button>
+                <button class="btn btn-danger" onclick="viderDonnees()">
+                    🗑️ Vider toutes les données
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDepense">0€</div>
+                <div class="stat-label">Total Dépenses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="argentRestant">0€</div>
+                <div class="stat-label">Solde Restant</div>
+            </div>
+        </div>
+
+        <div class="table-container fade-in">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>📝 Titre</th>
+                        <th>💰 Montant</th>
+                        <th>📅 Date</th>
+                        <th>🏷️ Catégorie</th>
+                        <th>📊 Type</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Détection du type d'appareil et optimisations
+        class DeviceManager {
+            constructor() {
+                this.isMobile = window.innerWidth <= 767;
+                this.isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+                this.isDesktop = window.innerWidth > 1024;
+                this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                
+                this.initDeviceOptimizations();
+                this.setupResizeHandler();
+            }
+
+            initDeviceOptimizations() {
+                // Optimisations pour mobile
+                if (this.isMobile) {
+                    this.optimizeForMobile();
+                }
+
+                // Optimisations pour tablette
+                if (this.isTablet) {
+                    this.optimizeForTablet();
+                }
+
+                // Optimisations pour appareils tactiles
+                if (this.isTouchDevice) {
+                    this.optimizeForTouch();
+                }
+            }
+
+            optimizeForMobile() {
+                // Empêcher le zoom sur les inputs
+                const inputs = document.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.type !== 'number') {
+                        input.style.fontSize = '16px';
+                    }
+                });
+
+                // Ajouter une classe pour les styles mobiles
+                document.body.classList.add('mobile-device');
+            }
+
+            optimizeForTablet() {
+                document.body.classList.add('tablet-device');
+            }
+
+            optimizeForTouch() {
+                document.body.classList.add('touch-device');
+                
+                // Améliorer les zones de contact
+                const buttons = document.querySelectorAll('.btn, .delete-btn');
+                buttons.forEach(btn => {
+                    btn.style.minHeight = '44px';
+                    btn.style.minWidth = '44px';
+                });
+            }
+
+            setupResizeHandler() {
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        this.updateDeviceType();
+                        this.handleOrientationChange();
+                    }, 100);
+                });
+            }
+
+            updateDeviceType() {
+                const prevMobile = this.isMobile;
+                this.isMobile = window.innerWidth <= 767;
+                this.isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+                this.isDesktop = window.innerWidth > 1024;
+
+                // Réorganiser l'interface si nécessaire
+                if (prevMobile !== this.isMobile) {
+                    this.reorganizeInterface();
+                }
+            }
+
+            handleOrientationChange() {
+                // Gérer le changement d'orientation sur mobile/tablette
+                if (this.isMobile || this.isTablet) {
+                    setTimeout(() => {
+                        actualiserTableau();
+                    }, 300);
+                }
+            }
+
+            reorganizeInterface() {
+                // Réorganiser les éléments selon le type d'appareil
+                if (this.isMobile) {
+                    this.optimizeForMobile();
+                } else {
+                    document.body.classList.remove('mobile-device');
+                }
+            }
+        }
+
+        // Gestionnaire de gestes tactiles
+        class TouchManager {
+            constructor() {
+                this.startY = 0;
+                this.startX = 0;
+                this.setupTouchEvents();
+            }
+
+            setupTouchEvents() {
+                let pullToRefreshDistance = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    this.startY = e.touches[0].pageY;
+                    this.startX = e.touches[0].pageX;
+                }, { passive: true });
+
+                document.addEventListener('touchmove', (e) => {
+                    const currentY = e.touches[0].pageY;
+                    const currentX = e.touches[0].pageX;
+                    
+                    pullToRefreshDistance = currentY - this.startY;
+
+                    // Pull to refresh sur mobile
+                    if (pullToRefreshDistance > 100 && window.scrollY === 0) {
+                        this.showPullToRefreshIndicator();
+                    }
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    if (pullToRefreshDistance > 150 && window.scrollY === 0) {
+                        this.refreshData();
+                    }
+                    this.hidePullToRefreshIndicator();
+                    pullToRefreshDistance = 0;
+                }, { passive: true });
+            }
+
+            showPullToRefreshIndicator() {
+                if (!document.querySelector('.pull-refresh-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'pull-refresh-indicator';
+                    indicator.innerHTML = '🔄 Relâchez pour actualiser';
+                    indicator.style.cssText = `
+                        position: fixed;
+                        top: 10px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: var(--accent);
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: 20px;
+                        z-index: 1001;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                    `;
+                    document.body.appendChild(indicator);
+                }
+            }
+
+            hidePullToRefreshIndicator() {
+                const indicator = document.querySelector('.pull-refresh-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            }
+
+            refreshData() {
+                actualiserTableau();
+                afficherStatutSauvegarde('🔄 Interface actualisée');
+            }
+        }
+
+        // Gestionnaire de performance
+        class PerformanceManager {
+            constructor() {
+                this.setupLazyLoading();
+                this.optimizeAnimations();
+            }
+
+            setupLazyLoading() {
+                // Intersection Observer pour les animations
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                // Observer les cartes
+                document.querySelectorAll('.glass-card').forEach(card => {
+                    observer.observe(card);
+                });
+            }
+
+            optimizeAnimations() {
+                // Réduire les animations sur les appareils moins performants
+                if (navigator.hardwareConcurrency <= 2) {
+                    document.documentElement.style.setProperty('--animation-duration', '0.1s');
+                }
+
+                // Désactiver les animations si l'utilisateur les préfère réduites
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.documentElement.style.setProperty('--animation-duration', '0s');
+                }
+            }
+        }
+
+        // Initialisation des gestionnaires
+        let deviceManager, touchManager, performanceManager;
+
+        // Fonction améliorée pour la gestion du clavier virtuel
+        function handleVirtualKeyboard() {
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', () => {
+                    const viewportHeight = window.visualViewport.height;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (viewportHeight < windowHeight * 0.75) {
+                        // Clavier virtuel ouvert
+                        document.body.classList.add('keyboard-open');
+                        
+                        // Faire défiler vers l'élément actif
+                        setTimeout(() => {
+                            const activeElement = document.activeElement;
+                            if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'SELECT')) {
+                                activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }, 100);
+                    } else {
+                        // Clavier virtuel fermé
+                        document.body.classList.remove('keyboard-open');
+                    }
+                });
+            }
+        }
+
+        // Fonction pour optimiser les tableaux sur mobile
+        function optimizeTableForMobile() {
+            if (window.innerWidth <= 767) {
+                const table = document.querySelector('.table');
+                if (table) {
+                    // Ajouter un indicateur de scroll horizontal
+                    const scrollIndicator = document.createElement('div');
+                    scrollIndicator.className = 'scroll-indicator';
+                    scrollIndicator.innerHTML = '← Glissez pour voir plus →';
+                    scrollIndicator.style.cssText = `
+                        text-align: center;
+                        padding: 0.5rem;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: var(--text-muted);
+                        font-size: 0.8rem;
+                        margin-bottom: 1rem;
+                        border-radius: 10px;
+                    `;
+                    
+                    const tableContainer = document.querySelector('.table-container');
+                    if (tableContainer && !document.querySelector('.scroll-indicator')) {
+                        tableContainer.parentNode.insertBefore(scrollIndicator, tableContainer);
+                        
+                        // Masquer l'indicateur après quelques secondes
+                        setTimeout(() => {
+                            scrollIndicator.style.opacity = '0';
+                            setTimeout(() => scrollIndicator.remove(), 300);
+                        }, 3000);
+                    }
+                }
+            }
+        }
+        class StorageManager {
+            constructor() {
+                this.isLocalStorageAvailable = typeof Storage !== "undefined";
+                this.storageKey = 'budgetMasterPro_operations';
+            }
+
+            save(data) {
+                if (this.isLocalStorageAvailable) {
+                    try {
+                        localStorage.setItem(this.storageKey, JSON.stringify(data));
+                        return true;
+                    } catch (e) {
+                        console.warn('localStorage non disponible, utilisation du stockage en mémoire');
+                        return false;
+                    }
+                }
+                return false;
+            }
+
+            load() {
+                if (this.isLocalStorageAvailable) {
+                    try {
+                        const stored = localStorage.getItem(this.storageKey);
+                        return stored ? JSON.parse(stored) : [];
+                    } catch (e) {
+                        console.warn('Erreur lors du chargement depuis localStorage');
+                        return [];
+                    }
+                }
+                return [];
+            }
+
+            clear() {
+                if (this.isLocalStorageAvailable) {
+                    try {
+                        localStorage.removeItem(this.storageKey);
+                        return true;
+                    } catch (e) {
+                        console.warn('Erreur lors de la suppression du localStorage');
+                        return false;
+                    }
+                }
+                return false;
+            }
+        }
+
+        const storage = new StorageManager();
+        let operations = [];
+
+        // Fonction pour afficher le statut de sauvegarde
+        function afficherStatutSauvegarde(message = '💾 Sauvegardé automatiquement', type = 'success') {
+            const status = document.getElementById('saveStatus');
+            status.textContent = message;
+            status.className = 'save-status show';
+            
+            if (type === 'saving') {
+                status.classList.add('saving');
+                status.textContent = '💾 Sauvegarde en cours...';
+            }
+            
+            setTimeout(() => {
+                status.classList.remove('show', 'saving');
+            }, 2000);
+        }
+
+        // Fonction pour sauvegarder automatiquement
+        function sauvegarderAutomatiquement() {
+            afficherStatutSauvegarde('💾 Sauvegarde en cours...', 'saving');
+            
+            setTimeout(() => {
+                const saved = storage.save(operations);
+                if (saved) {
+                    afficherStatutSauvegarde('💾 Sauvegardé automatiquement');
+                } else {
+                    afficherStatutSauvegarde('⚠️ Sauvegarde en mémoire uniquement', 'warning');
+                }
+            }, 500);
+        }
+
+        // Initialiser le sélecteur de date
+        flatpickr("#date", {
+            dateFormat: "d/m/Y",
+            locale: "fr",
+            theme: "dark"
+        });
+
+        function actualiserTableau() {
+            const tbody = document.getElementById('tbody');
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            tbody.innerHTML = '';
+            
+            let totalDepense = 0;
+            let totalRevenu = 0;
+            
+            const filteredOperations = operations.filter(op => 
+                op.titre.toLowerCase().includes(searchTerm) ||
+                op.montant.toString().includes(searchTerm) ||
+                op.categorie.toLowerCase().includes(searchTerm)
+            );
+            
+            filteredOperations.forEach((op, i) => {
+                const originalIndex = operations.indexOf(op);
+                const typeIcon = op.type === 'depense' ? '💸' : '💰';
+                const typeClass = op.type === 'depense' ? 'text-danger' : 'text-success';
+                
+                tbody.innerHTML += `
+                    <tr class="fade-in">
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'titre', this.innerText)">${op.titre}</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'montant', this.innerText)">${op.montant}€</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'date', this.innerText)">${op.date}</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'categorie', this.innerText)">${op.categorie}</td>
+                        <td class="${typeClass}">${typeIcon} ${op.type}</td>
+                        <td>
+                            <button class="delete-btn" onclick="supprimerOperation(${originalIndex})">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                if (op.type === 'depense') {
+                    totalDepense += parseFloat(op.montant) || 0;
+                } else {
+                    totalRevenu += parseFloat(op.montant) || 0;
+                }
+            });
+            
+            document.getElementById('totalDepense').innerText = totalDepense.toFixed(2) + '€';
+            document.getElementById('argentRestant').innerText = (totalRevenu - totalDepense).toFixed(2) + '€';
+            
+            // Changer la couleur du solde selon s'il est positif ou négatif
+            const soldeElement = document.getElementById('argentRestant');
+            const solde = totalRevenu - totalDepense;
+            if (solde < 0) {
+                soldeElement.style.background = 'var(--danger)';
+            } else {
+                soldeElement.style.background = 'var(--success)';
+            }
+            soldeElement.style.backgroundClip = 'text';
+            soldeElement.style.webkitBackgroundClip = 'text';
+            soldeElement.style.webkitTextFillColor = 'transparent';
+        }
+
+        function ajouterOperation() {
+            const titre = document.getElementById('titre').value.trim();
+            const montant = document.getElementById('montant').value.trim();
+            const date = document.getElementById('date').value.trim() || new Date().toLocaleDateString('fr-FR');
+            const categorie = document.getElementById('categorie').value;
+            const type = document.getElementById('type').value;
+            
+            if (!titre || !montant) {
+                Swal.fire({
+                    title: 'Erreur',
+                    text: 'Titre et montant sont requis',
+                    icon: 'error',
+                    background: '#252732',
+                    color: '#fff',
+                    confirmButtonColor: '#667eea'
+                });
+                return;
+            }
+            
+            operations.push({ 
+                titre, 
+                montant: parseFloat(montant), 
+                date, 
+                categorie, 
+                type,
+                dateCreation: new Date().toISOString()
+            });
+            
+            // Vider les champs
+            document.getElementById('titre').value = '';
+            document.getElementById('montant').value = '';
+            document.getElementById('date').value = '';
+            
+            actualiserTableau();
+            sauvegarderAutomatiquement();
+            
+            Swal.fire({
+                title: 'Succès!',
+                text: 'Opération ajoutée et sauvegardée',
+                icon: 'success',
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#667eea',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function modifierOperation(index, champ, valeur) {
+            if (champ === 'montant') {
+                valeur = parseFloat(valeur) || 0;
+            }
+            operations[index][champ] = valeur;
+            operations[index].dateModification = new Date().toISOString();
+            
+            actualiserTableau();
+            sauvegarderAutomatiquement();
+        }
+
+        function supprimerOperation(index) {
+            Swal.fire({
+                title: 'Êtes-vous sûr?',
+                text: "Cette action ne peut pas être annulée!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#ff6b6b',
+                cancelButtonColor: '#667eea',
+                confirmButtonText: 'Oui, supprimer!',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    operations.splice(index, 1);
+                    actualiserTableau();
+                    sauvegarderAutomatiquement();
+                    
+                    Swal.fire({
+                        title: 'Supprimé!',
+                        text: 'L\'opération a été supprimée et sauvegardée.',
+                        icon: 'success',
+                        background: '#252732',
+                        color: '#fff',
+                        confirmButtonColor: '#667eea',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        operations = data;
+                        actualiserTableau();
+                        sauvegarderAutomatiquement();
+                        
+                        Swal.fire({
+                            title: 'Succès!',
+                            text: 'Données importées et sauvegardées avec succès',
+                            icon: 'success',
+                            background: '#252732',
+                            color: '#fff',
+                            confirmButtonColor: '#667eea'
+                        });
+                    } else {
+                        throw new Error("Format JSON invalide");
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Erreur',
+                        text: 'Fichier JSON non valide',
+                        icon: 'error',
+                        background: '#252732',
+                        color: '#fff',
+                        confirmButtonColor: '#667eea'
+                    });
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(operations, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = `budget_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            Swal.fire({
+                title: 'Exporté!',
+                text: 'Vos données ont été exportées avec succès',
+                icon: 'success',
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#667eea',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function viderDonnees() {
+            Swal.fire({
+                title: 'Attention!',
+                text: 'Êtes-vous sûr de vouloir supprimer toutes les données? Cette action est irréversible!',
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#ff6b6b',
+                cancelButtonColor: '#667eea',
+                confirmButtonText: 'Oui, tout supprimer!',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    operations = [];
+                    storage.clear();
+                    actualiserTableau();
+                    
+                    Swal.fire({
+                        title: 'Supprimé!',
+                        text: 'Toutes les données ont été supprimées.',
+                        icon: 'success',
+                        background: '#252732',
+                        color: '#fff',
+                        confirmButtonColor: '#667eea',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        // Charger les données au démarrage
+        function chargerDonnees() {
+            const donneesChargees = storage.load();
+            if (donneesChargees && donneesChargees.length > 0) {
+                operations = donneesChargees;
+                actualiserTableau();
+                afficherStatutSauvegarde('📂 Données chargées depuis la sauvegarde');
+            }
+        }
+
+        // Initialiser l'affichage et charger les données
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les gestionnaires d'appareils
+            deviceManager = new DeviceManager();
+            touchManager = new TouchManager();
+            performanceManager = new PerformanceManager();
+            
+            // Gérer le clavier virtuel
+            handleVirtualKeyboard();
+            
+            // Charger les données
+            chargerDonnees();
+            
+            // Optimiser le tableau pour mobile
+            optimizeTableForMobile();
+            
+            // Ajouter des animations au chargement
+            const cards = document.querySelectorAll('.fade-in');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Ajouter des styles CSS pour le clavier virtuel
+            const style = document.createElement('style');
+            style.textContent = `
+                .keyboard-open {
+                    height: 100vh;
+                    overflow: hidden;
+                }
+                
+                .keyboard-open .container {
+                    padding-bottom: 20vh;
+                }
+                
+                .touch-device .btn:hover {
+                    transform: none;
+                }
+                
+                .touch-device .btn:active {
+                    transform: scale(0.95);
+                }
+                
+                .mobile-device .table-container {
+                    border-radius: 10px;
+                }
+                
+                .mobile-device .glass-card {
+                    border-radius: 15px;
+                }
+                
+                .scroll-indicator {
+                    animation: pulse 2s ease-in-out infinite;
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 0.6; }
+                    50% { opacity: 1; }
+                }
+                
+                /* Styles pour les notifications sur mobile */
+                @media (max-width: 575px) {
+                    .swal2-popup {
+                        width: 90% !important;
+                        font-size: 0.9rem !important;
+                    }
+                    
+                    .swal2-title {
+                        font-size: 1.2rem !important;
+                    }
+                    
+                    .swal2-html-container {
+                        font-size: 0.85rem !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Raccourcis clavier adaptés selon l'appareil
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter pour ajouter (PC) ou Cmd+Enter (Mac)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                ajouterOperation();
+            }
+            
+            // Échap pour vider les champs
+            if (e.key === 'Escape') {
+                document.getElementById('titre').value = '';
+                document.getElementById('montant').value = '';
+                document.getElementById('date').value = '';
+                document.getElementById('search').value = '';
+                actualiserTableau();
+            }
+            
+            // Ctrl+F pour rechercher
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('search').focus();
+            }
+        });
+
+        // Gestion améliorée du redimensionnement
+        window.addEventListener('resize', function() {
+            clearTimeout(window.resizeTimeout);
+            window.resizeTimeout = setTimeout(() => {
+                optimizeTableForMobile();
+                actualiserTableau();
+            }, 250);
+        });
+
+        // Optimisations pour la performance
+        window.addEventListener('scroll', function() {
+            // Lazy loading pour les grosses listes (si plus de 50 éléments)
+            if (operations.length > 50) {
+                requestAnimationFrame(() => {
+                    // Ici on pourrait implémenter une virtualisation du tableau
+                    // Pour l'instant on garde simple
+                });
+            }
+        }, { passive: true });
+
+        // Sauvegarder automatiquement toutes les 30 secondes
+        setInterval(() => {
+            if (operations.length > 0) {
+                sauvegarderAutomatiquement();
+            }
+        }, 30000);
+
+        // Sauvegarder avant de quitter la page
+        window.addEventListener('beforeunload', function() {
+            storage.save(operations);
+        });
+
+        // Initialiser l'affichage immédiatement
+        actualiserTableau();
+    </script>
+</body>
+</html>
