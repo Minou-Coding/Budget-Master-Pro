@@ -3,2111 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radios 100% France - Les meilleures radios françaises</title>
-    <meta name="description" content="Écoutez les meilleures radios françaises en direct. Interface moderne et optimisée pour tous les écrans.">
+    <title>Gestionnaire Intelligent de Budget</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        :root {
-            --primary: #0f0f17;
-            --secondary: #1a1a2e;
-            --accent: #ff3366;
-            --accent-glow: #ff336680;
-            --text: #ffffff;
-            --text-secondary: #b8b8d1;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            
-            /* Responsive Variables */
-            --mobile-padding: 1rem;
-            --tablet-padding: 2rem;
-            --desktop-padding: 3rem;
-            --tv-padding: 4rem;
-            
-            --mobile-gap: 1rem;
-            --tablet-gap: 1.5rem;
-            --desktop-gap: 2rem;
-            --tv-gap: 3rem;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #81FBB8 0%, #28C76F 100%);
+            --danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --dark: #0a0a0a;
+            --surface: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--primary);
+            background: var(--dark);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            min-height: 100vh;
             color: var(--text);
             overflow-x: hidden;
-            min-height: 100vh;
-            line-height: 1.5;
         }
 
-        /* Animated Background */
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 51, 102, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(102, 51, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(0, 255, 187, 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, #0f0f17 0%, #1a1a2e 100%);
-            animation: backgroundMove 20s ease infinite;
-        }
-
-        @keyframes backgroundMove {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(90deg); }
-        }
-
-        /* Header - Responsive */
-        header {
-            padding: var(--mobile-padding);
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        .main-title {
-            font-weight: 800;
-            background: linear-gradient(135deg, #ff3366, #6633ff, #00ffbb);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite;
-            margin-bottom: 0.5rem;
-            letter-spacing: -2px;
-            
-            /* Mobile */
-            font-size: clamp(2rem, 8vw, 4rem);
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-weight: 400;
-            margin-bottom: 2rem;
-            
-            /* Responsive font */
-            font-size: clamp(1rem, 3vw, 1.3rem);
-        }
-
-        /* Radio Container - Ultra Responsive */
-        .radio-container {
-            padding: var(--mobile-padding);
-            max-width: 100%;
+        .container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding-bottom: clamp(120px, 15vh, 200px);
+            padding: 2rem;
         }
 
-        .radio-grid {
-            display: grid;
-            gap: var(--mobile-gap);
-            
-            /* Ultra responsive grid */
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-        }
-
-        /* Radio Cards - Adaptive */
-        .radio-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: clamp(16px, 3vw, 24px);
-            border: 1px solid var(--glass-border);
-            padding: clamp(1rem, 3vw, 2rem);
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            
-            /* Touch-friendly minimum size */
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
 
-        .radio-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--accent), #6633ff);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: -1;
-        }
-
-        .radio-card:hover, .radio-card:focus {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(255, 51, 102, 0.4);
-            border-color: var(--accent);
-        }
-
-        .radio-card:hover::before, .radio-card:focus::before {
-            opacity: 0.1;
-        }
-
-        .radio-card.playing {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--accent);
-            box-shadow: 0 20px 50px var(--accent-glow);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .radio-card.playing::before {
-            opacity: 0.15;
-        }
-
-        /* Logo - Adaptive sizing */
-        .radio-logo {
-            width: clamp(60px, 12vw, 100px);
-            height: clamp(60px, 12vw, 100px);
-            border-radius: clamp(12px, 3vw, 20px);
-            margin: 0 auto clamp(1rem, 2vw, 1.5rem);
-            background: var(--glass);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
-
-        .radio-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: inherit;
-        }
-
-        .radio-logo::after {
+        .header::before {
             content: '';
             position: absolute;
             top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 51, 102, 0.4), transparent);
-            animation: logoSpin 4s linear infinite;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: -1;
         }
 
-        .radio-card.playing .radio-logo::after {
-            opacity: 1;
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            background: var(--primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: glow 3s ease-in-out infinite alternate;
         }
 
-        @keyframes logoSpin {
-            to { transform: rotate(360deg); }
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5)); }
+            to { filter: drop-shadow(0 0 30px rgba(118, 75, 162, 0.8)); }
         }
 
-        /* Text - Adaptive */
-        .radio-name {
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-            
-            /* Responsive text */
-            font-size: clamp(1rem, 2.5vw, 1.4rem);
-            line-height: 1.3;
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 300;
         }
 
-        .radio-location {
-            color: var(--text-secondary);
-            text-align: center;
-            opacity: 0.9;
-            
-            /* Responsive text */
-            font-size: clamp(0.8rem, 2vw, 1rem);
-        }
-
-        /* Epic Audio Player - Ultra Responsive */
-        .audio-player {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 15, 23, 0.95);
-            backdrop-filter: blur(30px);
-            border-top: 1px solid var(--glass-border);
-            z-index: 1000;
-            transform: translateY(100%);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .audio-player.active {
-            transform: translateY(0);
-        }
-
-        .player-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: clamp(1rem, 3vw, 2rem);
-        }
-
-        .player-main {
-            display: flex;
-            align-items: center;
-            gap: clamp(1rem, 3vw, 3rem);
-            margin-bottom: clamp(0.5rem, 2vw, 1rem);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        /* Now Playing - Responsive */
-        .now-playing {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.8rem, 2vw, 1.5rem);
-            flex: 1;
-            min-width: 250px;
-            max-width: 500px;
-        }
-
-        .now-playing-cover {
-            width: clamp(60px, 12vw, 90px);
-            height: clamp(60px, 12vw, 90px);
-            border-radius: clamp(12px, 3vw, 18px);
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            background: var(--glass);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
         }
 
-        .now-playing-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .now-playing-cover::before {
+        .glass-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: coverShimmer 3s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
         }
 
-        @keyframes coverShimmer {
-            to { left: 100%; }
+        .glass-card:hover::before {
+            left: 100%;
         }
 
-        .now-playing-info {
-            flex: 1;
-            min-width: 0;
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .now-playing-info h3 {
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            background: linear-gradient(135deg, var(--text), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            
-            /* Responsive text */
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            line-height: 1.2;
+        .form-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .now-playing-info p {
-            color: var(--text-secondary);
-            font-weight: 500;
-            
-            /* Responsive text */
-            font-size: clamp(0.8rem, 2vw, 1.1rem);
+        .input-group {
+            position: relative;
         }
 
-        /* Epic Controls - Responsive */
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.8rem, 2vw, 1.5rem);
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .control-btn {
-            width: clamp(45px, 8vw, 60px);
-            height: clamp(45px, 8vw, 60px);
-            border-radius: 50%;
-            border: none;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: var(--text);
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group select option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            
-            /* Touch-friendly */
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .control-btn::before {
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text);
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .table td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.01);
+        }
+
+        .table td[contenteditable="true"] {
+            cursor: text;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .table td[contenteditable="true"]:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .table td[contenteditable="true"]:focus {
+            outline: 2px solid #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: -1;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
         }
 
-        .control-btn:hover, .control-btn:focus, .control-btn:active {
-            transform: scale(1.1);
-            border-color: var(--accent);
-            box-shadow: 0 0 25px var(--accent-glow);
+        .stat-card:nth-child(2)::before {
+            background: var(--success);
         }
 
-        .control-btn:hover::before, .control-btn:focus::before, .control-btn:active::before {
-            opacity: 0.3;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
-        .play-btn {
-            width: clamp(55px, 10vw, 80px);
-            height: clamp(55px, 10vw, 80px);
-            background: linear-gradient(135deg, var(--accent), #6633ff);
-            font-size: clamp(1.2rem, 3vw, 2rem);
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .play-btn:hover, .play-btn:focus, .play-btn:active {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--accent-glow);
+        .stat-card:nth-child(2) .stat-value {
+            background: var(--success);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* Volume Section - Responsive */
-        .volume-section {
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .file-actions {
             display: flex;
-            align-items: center;
-            gap: clamp(0.5rem, 2vw, 1rem);
-            flex-shrink: 0;
-            min-width: fit-content;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .volume-icon {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            
-            /* Touch-friendly */
-            padding: 0.5rem;
-            border-radius: 50%;
-            -webkit-tap-highlight-color: transparent;
+        .file-input {
+            display: none;
         }
 
-        .volume-icon:hover, .volume-icon:focus, .volume-icon:active {
-            color: var(--accent);
-            transform: scale(1.1);
-            background: var(--glass);
-        }
-
-        .volume-slider {
-            width: clamp(80px, 15vw, 120px);
-            height: clamp(6px, 1vw, 8px);
-            border-radius: 4px;
-            background: var(--glass);
-            outline: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: clamp(18px, 3vw, 24px);
-            height: clamp(18px, 3vw, 24px);
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #6633ff);
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--accent-glow);
-            transition: all 0.3s ease;
-        }
-
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        /* Epic Visualizer - Responsive */
-        .visualizer-container {
-            margin-top: clamp(0.5rem, 2vw, 1rem);
-            display: flex;
-            justify-content: center;
-        }
-
-        .visualizer {
-            display: flex;
-            align-items: end;
-            gap: clamp(2px, 0.5vw, 4px);
-            height: clamp(40px, 8vw, 60px);
-            padding: clamp(8px, 2vw, 10px);
-            background: var(--glass);
-            border-radius: clamp(10px, 2vw, 15px);
-            border: 1px solid var(--glass-border);
-        }
-
-        .bar {
-            width: clamp(4px, 1vw, 6px);
-            background: linear-gradient(to top, var(--accent), #6633ff, #00ffbb);
-            border-radius: clamp(2px, 0.5vw, 3px);
-            animation: visualizerBar 1.5s infinite ease-in-out;
-            transform-origin: bottom;
-        }
-
-        .bar:nth-child(1) { animation-delay: 0s; }
-        .bar:nth-child(2) { animation-delay: 0.1s; }
-        .bar:nth-child(3) { animation-delay: 0.2s; }
-        .bar:nth-child(4) { animation-delay: 0.3s; }
-        .bar:nth-child(5) { animation-delay: 0.4s; }
-        .bar:nth-child(6) { animation-delay: 0.5s; }
-        .bar:nth-child(7) { animation-delay: 0.6s; }
-        .bar:nth-child(8) { animation-delay: 0.7s; }
-        .bar:nth-child(9) { animation-delay: 0.8s; }
-        .bar:nth-child(10) { animation-delay: 0.9s; }
-
-        @keyframes visualizerBar {
-            0%, 100% { height: clamp(6px, 2vw, 8px); }
-            50% { height: clamp(25px, 6vw, 40px); }
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: clamp(16px, 3vw, 20px);
-            height: clamp(16px, 3vw, 20px);
-            border: 2px solid var(--glass);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Device-Specific Optimizations */
-        
-        /* Mobile Portrait (320px - 480px) */
-        @media screen and (max-width: 480px) and (orientation: portrait) {
-            :root {
-                --mobile-padding: 1rem;
-                --mobile-gap: 1rem;
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
             }
-            
-            .radio-grid {
+
+            .form-section {
                 grid-template-columns: 1fr;
             }
-            
-            .player-main {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .file-actions {
                 flex-direction: column;
-                text-align: center;
             }
-            
-            .now-playing {
-                justify-content: center;
-                text-align: center;
-                min-width: auto;
-                width: 100%;
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 600px;
             }
         }
 
-        /* Mobile Landscape (481px - 768px) */
-        @media screen and (min-width: 481px) and (max-width: 768px) {
-            :root {
-                --mobile-padding: 1.5rem;
-                --mobile-gap: 1.5rem;
-            }
-            
-            .radio-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        /* Tablet Portrait (769px - 1024px) */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            :root {
-                --tablet-padding: 2rem;
-                --tablet-gap: 1.5rem;
-            }
-            
-            .radio-container {
-                padding: var(--tablet-padding);
-            }
-            
-            .radio-grid {
-                gap: var(--tablet-gap);
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-        }
-
-        /* Desktop (1025px - 1920px) */
-        @media screen and (min-width: 1025px) and (max-width: 1920px) {
-            :root {
-                --desktop-padding: 3rem;
-                --desktop-gap: 2rem;
-            }
-            
-            .radio-container {
-                padding: var(--desktop-padding);
-                max-width: 1400px;
-            }
-            
-            .radio-grid {
-                gap: var(--desktop-gap);
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            }
-            
-            header {
-                padding: var(--desktop-padding);
-            }
-        }
-
-        /* Large Desktop & TV (1921px+) */
-        @media screen and (min-width: 1921px) {
-            :root {
-                --tv-padding: 4rem;
-                --tv-gap: 3rem;
-            }
-            
-            .radio-container {
-                padding: var(--tv-padding);
-                max-width: 2000px;
-            }
-            
-            .radio-grid {
-                gap: var(--tv-gap);
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            }
-            
-            header {
-                padding: var(--tv-padding);
-            }
-            
-            .main-title {
-                font-size: clamp(4rem, 6vw, 6rem);
-            }
-            
-            .subtitle {
-                font-size: clamp(1.5rem, 2vw, 2rem);
-            }
-        }
-
-        /* 4K & Ultra-wide Support */
-        @media screen and (min-width: 2560px) {
-            .radio-container {
-                max-width: 2400px;
-            }
-            
-            .radio-grid {
-                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            }
-        }
-
-        /* High DPI / Retina Display Support */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .radio-logo img,
-            .now-playing-cover img {
-                image-rendering: -webkit-optimize-contrast;
-                image-rendering: crisp-edges;
-            }
-        }
-
-        /* Touch Device Optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .radio-card:hover {
-                transform: none;
-            }
-            
-            .radio-card:active {
-                transform: scale(0.98);
-            }
-            
-            .control-btn:hover {
-                transform: none;
-            }
-            
-            .control-btn:active {
-                transform: scale(0.95);
-            }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Focus States for Keyboard Navigation */
-        .radio-card:focus,
-        .control-btn:focus,
-        .volume-icon:focus {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        /* Voice Control Interface */
-        .voice-control {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: flex-end;
-        }
-
-        .voice-btn {
-            width: clamp(60px, 10vw, 80px);
-            height: clamp(60px, 10vw, 80px);
-            border-radius: 50%;
-            border: none;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            color: var(--text);
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+        .loading {
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        .voice-btn::before {
+        .loading::after {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: -1;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: loading 1.5s infinite;
         }
 
-        .voice-btn:hover {
-            transform: scale(1.1);
-            border-color: var(--accent);
-            box-shadow: 0 0 30px var(--accent-glow);
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
-        .voice-btn:hover::before {
-            opacity: 0.3;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        .voice-btn.listening {
-            background: linear-gradient(135deg, var(--accent), #6633ff);
-            border-color: var(--accent);
-            box-shadow: 0 0 30px var(--accent-glow);
-            animation: voicePulse 1.5s infinite ease-in-out;
-        }
-
-        .voice-btn.processing {
-            background: linear-gradient(135deg, #6633ff, #00ffbb);
-            animation: voiceProcessing 1s linear infinite;
-        }
-
-        .voice-btn.active {
-            background: linear-gradient(135deg, var(--accent), #6633ff) !important;
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        @keyframes voicePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes voiceProcessing {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .voice-status {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: clamp(0.8rem, 2vw, 1.2rem);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            font-size: clamp(0.9rem, 2vw, 1rem);
-            font-weight: 500;
-            max-width: 300px;
-            text-align: center;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .voice-status.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .voice-commands {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: clamp(1rem, 2vw, 1.5rem);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-            max-width: 350px;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .voice-commands.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .voice-commands h4 {
-            color: var(--accent);
-            margin-bottom: 0.8rem;
-            font-size: clamp(1rem, 2vw, 1.1rem);
-        }
-
-        .voice-commands ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .voice-commands li {
-            margin-bottom: 0.4rem;
-            opacity: 0.8;
-            line-height: 1.4;
-        }
-
-        .voice-commands li:before {
-            content: "🎤 ";
-            margin-right: 0.5rem;
-        }
-
-        .voice-wave {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            margin-top: 0.5rem;
-            justify-content: center;
-        }
-
-        .wave-bar {
-            width: 3px;
-            background: var(--accent);
-            border-radius: 2px;
-            animation: waveAnimation 1.2s infinite ease-in-out;
-        }
-
-        .wave-bar:nth-child(1) { animation-delay: 0s; height: 10px; }
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 15px; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 20px; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 15px; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 10px; }
-
-        @keyframes waveAnimation {
-            0%, 100% { transform: scaleY(0.4); }
-            50% { transform: scaleY(1); }
-        }
-
-        /* Mobile Voice Control Adjustments */
-        @media screen and (max-width: 768px) {
-            .voice-control {
-                top: 1rem;
-                right: 1rem;
-            }
-            
-            .voice-commands,
-            .voice-status {
-                max-width: calc(100vw - 4rem);
-                font-size: 0.8rem;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            .audio-player,
-            .background,
-            .voice-control {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-                color: black !important;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
-    
-    <!-- Voice Control Interface -->
-    <div class="voice-control">
-        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceControl()" title="Contrôle vocal permanent - Une autorisation unique (Ctrl+V)" aria-label="Activer/Désactiver le contrôle vocal permanent" tabindex="0">
-            🎤
-        </button>
-        
-        <div class="voice-status" id="voiceStatus">
-            <div id="voiceStatusText">Cliquez sur le micro pour activer</div>
-            <div class="voice-wave" id="voiceWave" style="display: none;">
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Budget Master Pro</h1>
+            <p class="subtitle">Gérez vos finances avec style et intelligence</p>
         </div>
-        
-        <div class="voice-commands" id="voiceCommands">
-            <h4>Commandes vocales</h4>
-            <p style="color: var(--accent); margin-bottom: 1rem; font-weight: 600;">
-                Dites "Ok Radio" suivi de votre commande
-            </p>
-            <ul>
-                <li>"Ok Radio, lance France Inter"</li>
-                <li>"Ok Radio, volume à 75%"</li>
-                <li>"Ok Radio, volume maximum"</li>
-                <li>"Ok Radio, monte le son"</li>
-                <li>"Ok Radio, station suivante"</li>
-                <li>"Ok Radio, pause"</li>
-                <li>"Ok Radio, coupe le son"</li>
-                <li>"Ok Radio, qu'est-ce qui joue ?"</li>
-            </ul>
-        </div>
-    </div>
-    
-    <header>
-        <h1 class="main-title">Radios 100% France</h1>
-        <p class="subtitle">Découvrez les meilleures radios françaises en direct</p>
-    </header>
 
-    <div class="radio-container">
-        <div class="radio-grid" id="radioGrid">
-            <!-- Radio cards will be generated by JavaScript -->
-        </div>
-    </div>
-
-    <!-- Epic Audio Player -->
-    <div class="audio-player" id="audioPlayer" role="region" aria-label="Lecteur audio">
-        <div class="player-container">
-            <div class="player-main">
-                <div class="now-playing">
-                    <div class="now-playing-cover" id="playerCover">
-                        <img src="" alt="Logo de la radio" id="playerCoverImg">
-                    </div>
-                    <div class="now-playing-info">
-                        <h3 id="playerTitle">Sélectionnez une radio</h3>
-                        <p id="playerSubtitle">Cliquez sur une station pour commencer</p>
-                    </div>
+        <div class="glass-card fade-in">
+            <div class="form-section">
+                <div class="input-group">
+                    <input id="titre" placeholder="Titre de l'opération">
                 </div>
-                
-                <div class="player-controls">
-                    <button class="control-btn" onclick="previousRadio()" title="Station précédente" aria-label="Station précédente">⏮️</button>
-                    <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()" title="Lecture/Pause" aria-label="Lecture/Pause">▶️</button>
-                    <button class="control-btn" onclick="nextRadio()" title="Station suivante" aria-label="Station suivante">⏭️</button>
+                <div class="input-group">
+                    <input id="montant" type="number" placeholder="Montant (€)">
                 </div>
-                
-                <div class="volume-section">
-                    <span class="volume-icon" onclick="toggleMute()" id="volumeIcon" title="Couper/Remettre le son" aria-label="Contrôle du volume" tabindex="0" role="button">🔊</span>
-                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.3" aria-label="Réglage du volume">
+                <div class="input-group">
+                    <input id="date" placeholder="Date">
+                </div>
+                <div class="input-group">
+                    <select id="categorie">
+                        <option>Alimentation</option>
+                        <option>Loisirs</option>
+                        <option>Abonnements</option>
+                        <option>Transport</option>
+                        <option>Santé</option>
+                        <option>Éducation</option>
+                        <option>Autres</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <select id="type">
+                        <option value="depense">💸 Dépense</option>
+                        <option value="revenu">💰 Revenu</option>
+                    </select>
                 </div>
             </div>
-            
-            <div class="visualizer-container">
-                <div class="visualizer" id="visualizer" style="display: none;" aria-hidden="true">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
+            <button class="btn btn-primary" onclick="ajouterOperation()">
+                ✨ Ajouter l'opération
+            </button>
+        </div>
+
+        <div class="glass-card fade-in search-section">
+            <input id="search" class="search-input" placeholder="🔍 Rechercher par titre, montant ou catégorie..." oninput="actualiserTableau()">
+        </div>
+
+        <div class="glass-card fade-in">
+            <div class="file-actions">
+                <input type="file" id="fileInput" class="file-input" onchange="importJSON(event)">
+                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click();">
+                    📥 Importer JSON
+                </button>
+                <button class="btn btn-accent" onclick="exportJSON()">
+                    📤 Exporter JSON
+                </button>
             </div>
         </div>
-    </div>
 
-    <audio id="audioElement" preload="none"></audio>
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDepense">0€</div>
+                <div class="stat-label">Total Dépenses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="argentRestant">0€</div>
+                <div class="stat-label">Solde Restant</div>
+            </div>
+        </div>
+
+        <div class="table-container fade-in">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>📝 Titre</th>
+                        <th>💰 Montant</th>
+                        <th>📅 Date</th>
+                        <th>🏷️ Catégorie</th>
+                        <th>📊 Type</th>
+                        <th>⚡ Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
-        const radios = [
-            { 
-                name: "Direct FM", 
-                location: "Metz", 
-                stream: "https://directfm.ice.infomaniak.ch/directfm-128.mp3", 
-                logo: "https://i.ibb.co/bRBHNv52/t-l-chargement-3.jpg"
-            },
-            { 
-                name: "France Inter", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/franceinter-midfi.mp3", 
-                logo: "https://i.ibb.co/wFXQjzc3/t-l-chargement-4.png"
-            },
-            { 
-                name: "France Info", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/franceinfo-midfi.mp3", 
-                logo: "https://i.ibb.co/j9Bxsj3K/t-l-chargement.jpg"
-            },
-            { 
-                name: "France Bleu", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/fb1071-midfi.mp3", 
-                logo: "https://i.ibb.co/jP6TNSdc/France-Bleu-2021-svg.png"
-            },
-            { 
-                name: "Europe 1", 
-                location: "National", 
-                stream: "https://stream.europe1.fr/europe1.mp3", 
-                logo: "https://i.ibb.co/4RBpBBRq/t-l-chargement-2.png"
-            },
-            { 
-                name: "RTL", 
-                location: "National", 
-                stream: "https://icecast.rtl.fr/rtl-1-44-128", 
-                logo: "https://i.ibb.co/GQ17J77N/t-l-chargement-11.png"
-            },
-            { 
-                name: "NRJ", 
-                location: "National", 
-                stream: "https://scdn.nrjaudio.fm/audio1/fr/30001/mp3_128.mp3", 
-                logo: "https://i.ibb.co/v6jHbHLQ/t-l-chargement.png"
-            },
-            { 
-                name: "Skyrock", 
-                location: "National", 
-                stream: "https://icecast.skyrock.net/s/natio_mp3_128k", 
-                logo: "https://i.ibb.co/DDH8FvjB/t-l-chargement-3.png"
-            },
-            { 
-                name: "Fun Radio", 
-                location: "National", 
-                stream: "https://icecast.funradio.fr/fun-1-44-128", 
-                logo: "https://i.ibb.co/4wvsMXYW/t-l-chargement-1.jpg"
-            },
-            { 
-                name: "Chérie FM", 
-                location: "National", 
-                stream: "https://scdn.nrjaudio.fm/audio1/fr/40104/mp3_128.mp3", 
-                logo: "https://i.ibb.co/JTx5Stb/t-l-chargement-6.png"
-            },
-            { 
-                name: "Rire & Chansons", 
-                location: "National", 
-                stream: "https://scdn.nrjaudio.fm/audio1/fr/30401/mp3_128.mp3", 
-                logo: "https://i.ibb.co/21SydjZn/t-l-chargement-7.png"
-            },
-            { 
-                name: "Nostalgie", 
-                location: "National", 
-                stream: "https://scdn.nrjaudio.fm/audio1/fr/30601/mp3_128.mp3", 
-                logo: "https://i.ibb.co/YBcQ9xP2/images.png"
-            },
-            { 
-                name: "RFM", 
-                location: "National", 
-                stream: "https://stream.rfm.fr/rfm.mp3", 
-                logo: "https://i.ibb.co/FbDs01tY/t-l-chargement-2.jpg"
-            },
-            { 
-                name: "RTL2", 
-                location: "National", 
-                stream: "https://icecast.rtl2.fr/rtl2-1-44-128", 
-                logo: "https://i.ibb.co/9x9b6Tz/t-l-chargement-8.png"
-            },
-            { 
-                name: "FIP", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/fip-midfi.mp3", 
-                logo: "https://i.ibb.co/chfhGLD4/t-l-chargement-9.png"
-            },
-            { 
-                name: "France Culture", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/franceculture-midfi.mp3", 
-                logo: "https://i.ibb.co/5xtpSXVV/France-Culture-logo-2021-svg.png"
-            },
-            { 
-                name: "France Musique", 
-                location: "National", 
-                stream: "https://icecast.radiofrance.fr/francemusique-midfi.mp3", 
-                logo: "https://i.ibb.co/ycRh4bTx/t-l-chargement-10.png"
-            }
-        ];
-
-        let currentRadioIndex = -1;
-        let isPlaying = false;
-        let isMuted = false;
-        let previousVolume = 0.3;
-
-        const audioElement = document.getElementById('audioElement');
-        const audioPlayer = document.getElementById('audioPlayer');
-        const playBtn = document.getElementById('playBtn');
-        const playerTitle = document.getElementById('playerTitle');
-        const playerSubtitle = document.getElementById('playerSubtitle');
-        const playerCoverImg = document.getElementById('playerCoverImg');
-        const visualizer = document.getElementById('visualizer');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const volumeIcon = document.getElementById('volumeIcon');
-
-        // Voice Control Variables
-        let recognition = null;
-        let isVoiceControlActive = false; // Start inactive by default
-        let isListening = false;
-        let voiceTimeout = null;
-        let isWakeWordMode = false; // Only true when actively listening
-        let microphonePermissionGranted = false;
-        let permissionChecked = false;
-        
-        // Voice Control Elements
-        const voiceBtn = document.getElementById('voiceBtn');
-        const voiceStatus = document.getElementById('voiceStatus');
-        const voiceStatusText = document.getElementById('voiceStatusText');
-        const voiceWave = document.getElementById('voiceWave');
-        const voiceCommands = document.getElementById('voiceCommands');
-
-        // Check Microphone Permission
-        async function checkMicrophonePermission() {
-            try {
-                // Check if permissions API is available
-                if (navigator.permissions) {
-                    const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
-                    
-                    if (permissionStatus.state === 'granted') {
-                        microphonePermissionGranted = true;
-                        return true;
-                    } else if (permissionStatus.state === 'denied') {
-                        microphonePermissionGranted = false;
-                        return false;
-                    }
-                }
-                
-                // Fallback: try to access microphone directly
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                // Permission granted, stop the stream immediately
-                stream.getTracks().forEach(track => track.stop());
-                microphonePermissionGranted = true;
-                return true;
-                
-            } catch (error) {
-                console.error('Microphone permission error:', error);
-                microphonePermissionGranted = false;
-                
-                if (error.name === 'NotAllowedError') {
-                    voiceStatusText.textContent = 'Permission microphone refusée';
-                } else if (error.name === 'NotFoundError') {
-                    voiceStatusText.textContent = 'Aucun microphone trouvé';
-                } else {
-                    voiceStatusText.textContent = 'Erreur d\'accès au microphone';
-                }
-                
-                return false;
-            }
-        }
-
-        // Initialize Voice Control
-        async function initVoiceControl() {
-            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-                console.warn('Speech recognition not supported');
-                voiceBtn.style.display = 'none';
-                voiceStatusText.textContent = 'Reconnaissance vocale non supportée';
-                return false;
-            }
-
-            // Check microphone permission only once
-            if (!permissionChecked) {
-                permissionChecked = true;
-                voiceStatusText.textContent = 'Vérification des permissions...';
-                voiceStatus.classList.add('active'); // Show status during check
-                
-                const hasPermission = await checkMicrophonePermission();
-                
-                if (!hasPermission) {
-                    voiceStatusText.textContent = 'Cliquez sur le micro pour autoriser l\'accès';
-                    // Keep status visible but don't auto-activate
-                    return false;
-                }
-            }
-
-            if (!microphonePermissionGranted) {
-                return false;
-            }
-
-            // Initialize speech recognition only once
-            if (!recognition) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                
-                recognition.continuous = true;
-                recognition.interimResults = true;
-                recognition.lang = 'fr-FR';
-                recognition.maxAlternatives = 3;
-                
-                recognition.onstart = () => {
-                    isListening = true;
-                    if (isVoiceControlActive && isWakeWordMode) {
-                        voiceBtn.classList.add('listening');
-                        voiceStatusText.textContent = 'En écoute... Dites "Ok Radio" puis votre commande';
-                        voiceWave.style.display = 'flex';
-                    }
-                };
-                
-                recognition.onresult = (event) => {
-                    // Only process if voice control is active
-                    if (!isVoiceControlActive || !isWakeWordMode) return;
-                    
-                    let transcript = '';
-                    let isFinal = false;
-                    
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        if (event.results[i].isFinal) {
-                            transcript = event.results[i][0].transcript;
-                            isFinal = true;
-                        } else {
-                            transcript = event.results[i][0].transcript;
-                        }
-                    }
-                    
-                    // Check for wake word "ok radio"
-                    const cleanTranscript = transcript.toLowerCase().trim();
-                    if (cleanTranscript.includes('ok radio') || cleanTranscript.includes('okay radio') || 
-                        cleanTranscript.includes('o k radio') || cleanTranscript.includes('hockey radio')) {
-                        
-                        voiceStatusText.textContent = `🎤 "${transcript}"`;
-                        
-                        if (isFinal) {
-                            // Extract the command part after "ok radio"
-                            let command = cleanTranscript;
-                            const wakeWords = ['ok radio', 'okay radio', 'o k radio', 'hockey radio'];
-                            for (const wake of wakeWords) {
-                                if (command.includes(wake)) {
-                                    command = command.split(wake)[1]?.trim() || '';
-                                    break;
-                                }
-                            }
-                            
-                            if (command) {
-                                processVoiceCommand(command);
-                            } else {
-                                voiceStatusText.textContent = 'En attente de votre commande...';
-                            }
-                        }
-                    } else if (isFinal) {
-                        // Reset status if wake word not detected
-                        voiceStatusText.textContent = 'En écoute... Dites "Ok Radio" puis votre commande';
-                    }
-                };
-                
-                recognition.onerror = (event) => {
-                    console.error('Voice recognition error:', event.error);
-                    
-                    // Don't restart on permission errors to avoid repeated permission requests
-                    if (event.error === 'not-allowed') {
-                        microphonePermissionGranted = false;
-                        voiceStatusText.textContent = 'Permission microphone refusée';
-                        deactivateVoiceControl();
-                        return;
-                    }
-                    
-                    if (event.error === 'no-speech') {
-                        // Silently restart for no-speech errors only if active
-                        if (isVoiceControlActive && microphonePermissionGranted) {
-                            setTimeout(() => {
-                                startContinuousListening();
-                            }, 1000);
-                        }
-                        return;
-                    }
-                    
-                    let errorMessage = 'Erreur de reconnaissance vocale';
-                    switch (event.error) {
-                        case 'audio-capture':
-                            errorMessage = 'Microphone non accessible';
-                            break;
-                        case 'network':
-                            errorMessage = 'Erreur réseau';
-                            break;
-                        case 'service-not-allowed':
-                            errorMessage = 'Service non autorisé';
-                            break;
-                    }
-                    
-                    voiceStatusText.textContent = errorMessage;
-                    
-                    // Restart listening after error only if active
-                    if (isVoiceControlActive && microphonePermissionGranted) {
-                        setTimeout(() => {
-                            startContinuousListening();
-                        }, 2000);
-                    }
-                };
-                
-                recognition.onend = () => {
-                    isListening = false;
-                    
-                    // Auto-restart only if voice control is active and permissions are granted
-                    if (isVoiceControlActive && microphonePermissionGranted && isWakeWordMode) {
-                        setTimeout(() => {
-                            startContinuousListening();
-                        }, 500);
-                    }
-                };
-            }
-            
-            // Auto-activate if permissions are granted
-            if (microphonePermissionGranted) {
-                activateVoiceControl();
-            }
-            
-            return true;
-        }
-
-        // Start Continuous Listening
-        function startContinuousListening() {
-            if (!recognition || isListening || !microphonePermissionGranted) return;
-            
-            try {
-                recognition.start();
-            } catch (error) {
-                console.error('Error starting continuous listening:', error);
-                
-                // Don't retry on permission errors
-                if (error.name === 'NotAllowedError') {
-                    microphonePermissionGranted = false;
-                    voiceStatusText.textContent = 'Permission microphone révoquée';
-                    deactivateVoiceControl();
-                    return;
-                }
-                
-                // Retry after a delay for other errors
-                setTimeout(() => {
-                    if (isVoiceControlActive && !isListening && microphonePermissionGranted) {
-                        startContinuousListening();
-                    }
-                }, 1000);
-            }
-        }
-
-        // Toggle Voice Control
-        async function toggleVoiceControl() {
-            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-                voiceStatusText.textContent = 'Reconnaissance vocale non supportée';
-                voiceStatus.classList.add('active');
-                return;
-            }
-            
-            // If voice control is currently active, deactivate it
-            if (isVoiceControlActive) {
-                deactivateVoiceControl();
-                return;
-            }
-            
-            // If permissions not granted yet, try to get them
-            if (!microphonePermissionGranted) {
-                voiceStatusText.textContent = 'Demande d\'autorisation microphone...';
-                voiceStatus.classList.add('active');
-                
-                const hasPermission = await checkMicrophonePermission();
-                
-                if (!hasPermission) {
-                    voiceStatusText.textContent = 'Permission microphone requise pour continuer';
-                    return;
-                }
-                
-                // Initialize recognition if we just got permission
-                if (!recognition) {
-                    await initVoiceControl();
-                    return; // initVoiceControl will activate it automatically
-                }
-            }
-            
-            // Activate voice control
-            activateVoiceControl();
-        }
-
-        function activateVoiceControl() {
-            if (!microphonePermissionGranted || !recognition) {
-                console.warn('Cannot activate voice control: no permission or recognition not initialized');
-                return;
-            }
-            
-            isVoiceControlActive = true;
-            isWakeWordMode = true;
-            voiceStatus.classList.add('active');
-            voiceCommands.classList.add('active');
-            voiceBtn.classList.add('active');
-            voiceBtn.title = 'Désactiver le contrôle vocal';
-            voiceStatusText.textContent = 'Contrôle vocal activé - En écoute permanente';
-            
-            // Start listening
-            startContinuousListening();
-            
-            // Auto-hide commands after 8 seconds
-            setTimeout(() => {
-                if (isVoiceControlActive) {
-                    voiceCommands.classList.remove('active');
-                }
-            }, 8000);
-        }
-
-        function deactivateVoiceControl() {
-            isVoiceControlActive = false;
-            isWakeWordMode = false;
-            
-            // Stop recognition
-            if (recognition && isListening) {
-                try {
-                    recognition.stop();
-                } catch (error) {
-                    console.warn('Error stopping recognition:', error);
-                }
-            }
-            
-            stopListening();
-            voiceStatus.classList.remove('active');
-            voiceCommands.classList.remove('active');
-            voiceBtn.classList.remove('active');
-            voiceBtn.title = 'Activer le contrôle vocal';
-            voiceStatusText.textContent = 'Contrôle vocal désactivé';
-        }
-
-        function startListening() {
-            // This function is now mainly for manual activation
-            if (!recognition || isListening) return;
-            
-            try {
-                recognition.start();
-                voiceBtn.classList.add('processing');
-            } catch (error) {
-                console.error('Error starting voice recognition:', error);
-                voiceStatusText.textContent = 'Erreur lors du démarrage';
-            }
-        }
-
-        function stopListening() {
-            isListening = false;
-            voiceBtn.classList.remove('listening', 'processing');
-            voiceWave.style.display = 'none';
-            
-            // Only update status if voice control is active
-            if (isVoiceControlActive && isWakeWordMode) {
-                voiceStatusText.textContent = 'En écoute... Dites "Ok Radio" puis votre commande';
-            }
-        }
-
-        // Process Voice Commands with Natural Language
-        function processVoiceCommand(command) {
-            console.log('Processing command:', command);
-            voiceBtn.classList.add('processing');
-            
-            // Clean the command
-            command = command.replace(/[.,!?;]/g, '').toLowerCase();
-            
-            // Radio name mappings for better recognition
-            const radioMappings = {
-                'france inter': 'France Inter',
-                'france info': 'France Info',
-                'france bleu': 'France Bleu',
-                'france culture': 'France Culture',
-                'france musique': 'France Musique',
-                'europe 1': 'Europe 1',
-                'europe un': 'Europe 1',
-                'rtl': 'RTL',
-                'rtl2': 'RTL2',
-                'rtl deux': 'RTL2',
-                'nrj': 'NRJ',
-                'energie': 'NRJ',
-                'skyrock': 'Skyrock',
-                'sky rock': 'Skyrock',
-                'fun radio': 'Fun Radio',
-                'fun': 'Fun Radio',
-                'chérie fm': 'Chérie FM',
-                'cherie fm': 'Chérie FM',
-                'chérie': 'Chérie FM',
-                'cherie': 'Chérie FM',
-                'rire et chansons': 'Rire & Chansons',
-                'rire & chansons': 'Rire & Chansons',
-                'rire chansons': 'Rire & Chansons',
-                'nostalgie': 'Nostalgie',
-                'rfm': 'RFM',
-                'fip': 'FIP',
-                'direct fm': 'Direct FM',
-                'direct': 'Direct FM'
-            };
-            
-            try {
-                // Help commands
-                if (command.includes('aide') || command.includes('help') || command.includes('commande')) {
-                    voiceCommands.classList.add('active');
-                    voiceStatusText.textContent = 'Commandes disponibles affichées';
-                    
-                    // Show detailed help for volume
-                    setTimeout(() => {
-                        if (voiceCommands.classList.contains('active')) {
-                            voiceStatusText.textContent = 'Volume: 0-100%, min/max/moyen, +/-%, double, mute, etc.';
-                        }
-                    }, 3000);
-                    
-                    return;
-                }
-                
-                // Volume help commands
-                if (command.includes('aide volume') || command.includes('commande volume') || 
-                    command.includes('help volume') || command.includes('volume aide')) {
-                    voiceStatusText.textContent = 'Volume: Pourcentage exact, niveaux prédéfinis, incréments, mute/unmute';
-                    voiceCommands.classList.add('active');
-                    
-                    setTimeout(() => {
-                        voiceStatusText.textContent = 'Ex: "Volume 85", "Maximum", "Plus 20", "Baisse beaucoup", "Double"';
-                    }, 4000);
-                    
-                    return;
-                }
-                
-                // Play/Resume commands
-                if (command.includes('joue') || command.includes('play') || command.includes('lance') || 
-                    command.includes('démarre') || command.includes('demarre') || command.includes('reprend')) {
-                    
-                    // Check if it's a specific radio request
-                    let radioFound = false;
-                    for (const [key, value] of Object.entries(radioMappings)) {
-                        if (command.includes(key)) {
-                            const radioIndex = radios.findIndex(radio => radio.name === value);
-                            if (radioIndex !== -1) {
-                                playRadio(radioIndex);
-                                voiceStatusText.textContent = `Lecture: ${value}`;
-                                radioFound = true;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (!radioFound) {
-                        if (currentRadioIndex === -1) {
-                            // Play first radio if none selected
-                            playRadio(0);
-                            voiceStatusText.textContent = `Lecture: ${radios[0].name}`;
-                        } else {
-                            togglePlay();
-                            voiceStatusText.textContent = isPlaying ? `Lecture: ${radios[currentRadioIndex].name}` : 'Lecture en cours';
-                        }
-                    }
-                    return;
-                }
-                
-                // Pause commands
-                if (command.includes('pause') || command.includes('arrête') || command.includes('arrete') || 
-                    command.includes('stop') || command.includes('stoppe')) {
-                    if (currentRadioIndex !== -1 && isPlaying) {
-                        togglePlay();
-                        voiceStatusText.textContent = 'Lecture en pause';
-                    } else {
-                        voiceStatusText.textContent = 'Aucune radio en cours';
-                    }
-                    return;
-                }
-                
-                // Next radio commands
-                if (command.includes('suivant') || command.includes('next') || command.includes('après') ||
-                    command.includes('apres') || command.includes('prochain') || command.includes('change')) {
-                    if (currentRadioIndex !== -1) {
-                        nextRadio();
-                        voiceStatusText.textContent = `Station suivante: ${radios[currentRadioIndex].name}`;
-                    } else {
-                        voiceStatusText.textContent = 'Aucune radio sélectionnée';
-                    }
-                    return;
-                }
-                
-                // Previous radio commands
-                if (command.includes('précédent') || command.includes('precedent') || command.includes('previous') ||
-                    command.includes('avant') || command.includes('retour')) {
-                    if (currentRadioIndex !== -1) {
-                        previousRadio();
-                        voiceStatusText.textContent = `Station précédente: ${radios[currentRadioIndex].name}`;
-                    } else {
-                        voiceStatusText.textContent = 'Aucune radio sélectionnée';
-                    }
-                    return;
-                }
-                
-                // Volume commands - Ultra detailed control
-                if (command.includes('volume') || command.includes('son') || command.includes('audio') ||
-                    command.includes('fort') || command.includes('faible') || command.includes('mute') ||
-                    command.includes('silence') || command.includes('coupe') || command.includes('baisse') ||
-                    command.includes('monte') || command.includes('augmente') || command.includes('diminue')) {
-                    let volumeChanged = false;
-                    let newVolume = audioElement.volume;
-                    
-                    // Volume by percentage - exact values
-                    const percentageMatch = command.match(/(\d+)\s*(?:pourcent|%|pour\s*cent)/);
-                    if (percentageMatch) {
-                        const percentage = parseInt(percentageMatch[1]);
-                        if (percentage >= 0 && percentage <= 100) {
-                            newVolume = percentage / 100;
-                            volumeChanged = true;
-                            voiceStatusText.textContent = `Volume: ${percentage}%`;
-                        }
-                    }
-                    
-                    // Direct number commands (without percentage words)
-                    else if (command.match(/volume\s+(?:à\s+)?(\d+)(?!\s*(?:pourcent|%|pour\s*cent))/)) {
-                        const match = command.match(/volume\s+(?:à\s+)?(\d+)/);
-                        const number = parseInt(match[1]);
-                        if (number >= 0 && number <= 100) {
-                            newVolume = number / 100;
-                            volumeChanged = true;
-                            voiceStatusText.textContent = `Volume: ${number}%`;
-                        }
-                    }
-                    // Set volume to specific number (like "mets le volume à 30")
-                    else if (command.match(/(?:mets|met|règle|regle|ajuste)\s+(?:le\s+)?volume\s+(?:à\s+|sur\s+)?(\d+)/)) {
-                        const match = command.match(/(?:mets|met|règle|regle|ajuste)\s+(?:le\s+)?volume\s+(?:à\s+|sur\s+)?(\d+)/);
-                        const number = parseInt(match[1]);
-                        if (number >= 0 && number <= 100) {
-                            newVolume = number / 100;
-                            volumeChanged = true;
-                            voiceStatusText.textContent = `Volume réglé à: ${number}%`;
-                        }
-                    }
-                    
-                    // Volume levels - named presets
-                    else if (command.includes('minimum') || command.includes('mini') || command.includes('très faible') || 
-                             command.includes('tres faible') || command.includes('le plus bas')) {
-                        newVolume = 0.05;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: minimum (5%)';
-                    }
-                    else if (command.includes('maximum') || command.includes('maxi') || command.includes('très fort') ||
-                             command.includes('tres fort') || command.includes('le plus fort') || command.includes('fond')) {
-                        newVolume = 1.0;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: maximum (100%)';
-                    }
-                    else if (command.includes('moyen') || command.includes('milieu') || command.includes('normal') ||
-                             command.includes('défaut') || command.includes('defaut') || command.includes('standard')) {
-                        newVolume = 0.5;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: moyen (50%)';
-                    }
-                    else if (command.includes('faible') || command.includes('bas') || command.includes('doux')) {
-                        newVolume = 0.2;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: faible (20%)';
-                    }
-                    else if (command.includes('fort') || command.includes('haut') || command.includes('élevé') ||
-                             command.includes('eleve')) {
-                        newVolume = 0.8;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: fort (80%)';
-                    }
-                    // Quarter and three-quarter levels
-                    else if (command.includes('quart') || command.includes('25') || command.includes('vingt-cinq') ||
-                             command.includes('vingt cinq')) {
-                        newVolume = 0.25;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: quart (25%)';
-                    }
-                    else if (command.includes('trois quarts') || command.includes('trois-quarts') || 
-                             command.includes('75') || command.includes('soixante-quinze') || 
-                             command.includes('soixante quinze')) {
-                        newVolume = 0.75;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: trois quarts (75%)';
-                    }
-                    // Half level
-                    else if (command.includes('moitié') || command.includes('demi') || command.includes('50') ||
-                             command.includes('cinquante')) {
-                        newVolume = 0.5;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = 'Volume: moitié (50%)';
-                    }
-                    
-                    // Incremental changes - specific amounts
-                    else if (command.includes('plus') || command.includes('augmente') || command.includes('monte') || 
-                             command.includes('up') || command.includes('+') || command.includes('hausse')) {
-                        let increment = 0.1; // default
-                        
-                        // Check for specific increments
-                        const incrementMatch = command.match(/(?:plus|augmente|monte|hausse).*?(\d+)/);
-                        if (incrementMatch) {
-                            increment = parseInt(incrementMatch[1]) / 100;
-                        }
-                        else if (command.includes('beaucoup') || command.includes('fort') || command.includes('énormément') ||
-                                 command.includes('enormement') || command.includes('très') || command.includes('tres')) {
-                            increment = 0.3;
-                        }
-                        else if (command.includes('peu') || command.includes('légèrement') || command.includes('legerement') ||
-                                 command.includes('doucement') || command.includes('un peu') || command.includes('petit peu')) {
-                            increment = 0.05;
-                        }
-                        
-                        newVolume = Math.min(1, audioElement.volume + increment);
-                        volumeChanged = true;
-                        voiceStatusText.textContent = `Volume: +${Math.round(increment * 100)}% → ${Math.round(newVolume * 100)}%`;
-                    }
-                    else if (command.includes('moins') || command.includes('diminue') || command.includes('baisse') ||
-                             command.includes('down') || command.includes('-') || command.includes('réduis') ||
-                             command.includes('reduis')) {
-                        let decrement = 0.1; // default
-                        
-                        // Check for specific decrements
-                        const decrementMatch = command.match(/(?:moins|diminue|baisse|réduis|reduis).*?(\d+)/);
-                        if (decrementMatch) {
-                            decrement = parseInt(decrementMatch[1]) / 100;
-                        }
-                        else if (command.includes('beaucoup') || command.includes('fort') || command.includes('énormément') ||
-                                 command.includes('enormement') || command.includes('très') || command.includes('tres')) {
-                            decrement = 0.3;
-                        }
-                        else if (command.includes('peu') || command.includes('légèrement') || command.includes('legerement') ||
-                                 command.includes('doucement') || command.includes('un peu') || command.includes('petit peu')) {
-                            decrement = 0.05;
-                        }
-                        
-                        newVolume = Math.max(0, audioElement.volume - decrement);
-                        volumeChanged = true;
-                        voiceStatusText.textContent = `Volume: -${Math.round(decrement * 100)}% → ${Math.round(newVolume * 100)}%`;
-                    }
-                    
-                    // Multiplication/Division commands
-                    else if (command.includes('double') || command.includes('fois deux') || command.includes('x2')) {
-                        newVolume = Math.min(1, audioElement.volume * 2);
-                        volumeChanged = true;
-                        voiceStatusText.textContent = `Volume doublé: ${Math.round(newVolume * 100)}%`;
-                    }
-                    else if (command.includes('divise par deux') || command.includes('moitié du volume') ||
-                             command.includes('/2') || command.includes('÷2')) {
-                        newVolume = audioElement.volume / 2;
-                        volumeChanged = true;
-                        voiceStatusText.textContent = `Volume divisé par 2: ${Math.round(newVolume * 100)}%`;
-                    }
-                    
-                    // Mute/Unmute commands
-                    else if (command.includes('coupe') || command.includes('mute') || command.includes('silence') ||
-                             command.includes('éteins') || command.includes('eteins') || command.includes('zero') ||
-                             command.includes('0')) {
-                        toggleMute();
-                        voiceStatusText.textContent = isMuted ? 'Son coupé' : 'Son remis';
-                        return;
-                    }
-                    else if (command.includes('remet') || command.includes('rallume') || command.includes('unmute') ||
-                             command.includes('restore') || command.includes('rétablit') || command.includes('retablit')) {
-                        if (isMuted) {
-                            toggleMute();
-                            voiceStatusText.textContent = 'Son remis';
-                        } else {
-                            voiceStatusText.textContent = 'Son déjà actif';
-                        }
-                        return;
-                    }
-                    
-                    // Quick volume level commands (just numbers)
-                    else if (command.match(/^(?:volume\s+)?(\d+)$/)) {
-                        const match = command.match(/^(?:volume\s+)?(\d+)$/);
-                        const number = parseInt(match[1]);
-                        if (number >= 0 && number <= 100) {
-                            newVolume = number / 100;
-                            volumeChanged = true;
-                            voiceStatusText.textContent = `Volume: ${number}%`;
-                        }
-                    }
-                    
-                    // Apply volume change if any was made
-                    if (volumeChanged) {
-                        audioElement.volume = newVolume;
-                        volumeSlider.value = newVolume;
-                        
-                        // Update mute status
-                        if (newVolume === 0) {
-                            volumeIcon.textContent = '🔇';
-                            volumeIcon.setAttribute('aria-label', 'Remettre le son');
-                            isMuted = true;
-                        } else {
-                            volumeIcon.textContent = '🔊';
-                            volumeIcon.setAttribute('aria-label', 'Couper le son');
-                            isMuted = false;
-                            previousVolume = newVolume;
-                        }
-                    } else {
-                        // Generic volume status if no specific command matched
-                        voiceStatusText.textContent = `Volume actuel: ${Math.round(audioElement.volume * 100)}%`;
-                    }
-                    
-                    return;
-                }
-                
-                // Status commands
-                if (command.includes('que') && (command.includes('joue') || command.includes('écoute') || command.includes('ecoute') ||
-                    command.includes('actuel') || command.includes('maintenant') || command.includes('current'))) {
-                    if (currentRadioIndex !== -1) {
-                        const radio = radios[currentRadioIndex];
-                        const status = isPlaying ? 'en cours' : 'en pause';
-                        voiceStatusText.textContent = `Radio: ${radio.name} (${status})`;
-                    } else {
-                        voiceStatusText.textContent = 'Aucune radio sélectionnée';
-                    }
-                    return;
-                }
-                
-                // List radios command
-                if (command.includes('liste') || command.includes('radio disponible') || command.includes('quelles radio')) {
-                    voiceStatusText.textContent = 'Voir la liste des radios ci-dessous';
-                    return;
-                }
-                
-                // Volume status commands
-                if (command.includes('quel volume') || command.includes('volume actuel') || 
-                    command.includes('niveau volume') || command.includes('combien volume')) {
-                    const currentVol = Math.round(audioElement.volume * 100);
-                    voiceStatusText.textContent = `Volume actuel: ${currentVol}%`;
-                    return;
-                }
-                
-                // Fallback - try to find radio name in command
-                let radioFound = false;
-                for (const [key, value] of Object.entries(radioMappings)) {
-                    if (command.includes(key)) {
-                        const radioIndex = radios.findIndex(radio => radio.name === value);
-                        if (radioIndex !== -1) {
-                            playRadio(radioIndex);
-                            voiceStatusText.textContent = `Je lance ${value}`;
-                            radioFound = true;
-                            break;
-                        }
-                    }
-                }
-                
-                if (!radioFound) {
-                    voiceStatusText.textContent = 'Commande non reconnue';
-                }
-                
-            } catch (error) {
-                console.error('Error processing voice command:', error);
-                voiceStatusText.textContent = 'Erreur lors du traitement';
-            } finally {
-                setTimeout(() => {
-                    voiceBtn.classList.remove('processing');
-                }, 1000);
-            }
-        }
-
-        // Initialize voice control when page loads
-        window.addEventListener('load', async () => {
-            // Show initial status
-            voiceStatus.classList.add('active');
-            voiceStatusText.textContent = 'Initialisation du contrôle vocal...';
-            
-            await initVoiceControl();
-            
-            // If not activated automatically, show instruction
-            if (!isVoiceControlActive) {
-                voiceStatusText.textContent = 'Cliquez sur le micro pour activer';
-            }
+        flatpickr("#date", {
+            dateFormat: "d/m/Y",
+            locale: "fr",
+            theme: "dark"
         });
 
-        // Click on voice button to toggle voice control
-        voiceBtn.addEventListener('click', () => {
-            toggleVoiceControl();
-        });
+        let operations = [];
 
-        // Keyboard shortcut for voice control
-        document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        function actualiserTableau() {
+            const tbody = document.getElementById('tbody');
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            tbody.innerHTML = '';
             
-            if (e.code === 'KeyV' && e.ctrlKey) {
-                e.preventDefault();
-                toggleVoiceControl();
-            }
-        });
-
-        // Initialize
-        audioElement.volume = 0.3;
-        generateRadioCards();
-
-        // Generate Radio Cards with accessibility
-        function generateRadioCards() {
-            const radioGrid = document.getElementById('radioGrid');
-            radioGrid.innerHTML = '';
-
-            radios.forEach((radio, index) => {
-                const card = document.createElement('div');
-                card.className = 'radio-card';
-                card.onclick = () => playRadio(index);
-                card.setAttribute('tabindex', '0');
-                card.setAttribute('role', 'button');
-                card.setAttribute('aria-label', `Écouter ${radio.name}, ${radio.location}`);
+            let totalDepense = 0;
+            let totalRevenu = 0;
+            
+            const filteredOperations = operations.filter(op => 
+                op.titre.toLowerCase().includes(searchTerm) ||
+                op.montant.toString().includes(searchTerm) ||
+                op.categorie.toLowerCase().includes(searchTerm)
+            );
+            
+            filteredOperations.forEach((op, i) => {
+                const originalIndex = operations.indexOf(op);
+                const typeIcon = op.type === 'depense' ? '💸' : '💰';
+                const typeClass = op.type === 'depense' ? 'text-danger' : 'text-success';
                 
-                // Keyboard support
-                card.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        playRadio(index);
-                    }
-                });
-                
-                card.innerHTML = `
-                    <div class="radio-logo">
-                        <img src="${radio.logo}" alt="Logo ${radio.name}" loading="lazy">
-                    </div>
-                    <div class="radio-name">${radio.name}</div>
-                    <div class="radio-location">${radio.location}</div>
+                tbody.innerHTML += `
+                    <tr class="fade-in">
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'titre', this.innerText)">${op.titre}</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'montant', this.innerText)">${op.montant}€</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'date', this.innerText)">${op.date}</td>
+                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'categorie', this.innerText)">${op.categorie}</td>
+                        <td class="${typeClass}">${typeIcon} ${op.type}</td>
+                        <td>
+                            <button class="delete-btn" onclick="supprimerOperation(${originalIndex})">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
                 `;
                 
-                radioGrid.appendChild(card);
-            });
-        }
-
-        // Play Radio
-        function playRadio(index) {
-            if (index < 0 || index >= radios.length) return;
-            
-            const radio = radios[index];
-            currentRadioIndex = index;
-            
-            // Update UI
-            updateNowPlaying(radio);
-            updatePlayingCard();
-            showPlayer();
-            
-            // Update audio
-            audioElement.src = radio.stream;
-            audioElement.play().catch(e => {
-                console.error('Playback failed:', e);
-                playerSubtitle.textContent = 'Erreur de lecture';
-            });
-            
-            isPlaying = true;
-            playBtn.textContent = '⏸️';
-            playBtn.setAttribute('aria-label', 'Pause');
-            visualizer.style.display = 'flex';
-            visualizer.setAttribute('aria-hidden', 'false');
-        }
-
-        // Toggle Play/Pause
-        function togglePlay() {
-            if (currentRadioIndex === -1) return;
-            
-            if (isPlaying) {
-                audioElement.pause();
-                playBtn.textContent = '▶️';
-                playBtn.setAttribute('aria-label', 'Lecture');
-                visualizer.style.display = 'none';
-                visualizer.setAttribute('aria-hidden', 'true');
-                isPlaying = false;
-            } else {
-                audioElement.play().catch(e => {
-                    console.error('Playback failed:', e);
-                    playerSubtitle.textContent = 'Erreur de lecture';
-                });
-                playBtn.textContent = '⏸️';
-                playBtn.setAttribute('aria-label', 'Pause');
-                visualizer.style.display = 'flex';
-                visualizer.setAttribute('aria-hidden', 'false');
-                isPlaying = true;
-            }
-        }
-
-        // Next/Previous Radio
-        function nextRadio() {
-            if (currentRadioIndex === -1) return;
-            const nextIndex = (currentRadioIndex + 1) % radios.length;
-            playRadio(nextIndex);
-        }
-
-        function previousRadio() {
-            if (currentRadioIndex === -1) return;
-            const prevIndex = (currentRadioIndex - 1 + radios.length) % radios.length;
-            playRadio(prevIndex);
-        }
-
-        // Toggle Mute
-        function toggleMute() {
-            if (isMuted) {
-                audioElement.volume = previousVolume;
-                volumeSlider.value = previousVolume;
-                volumeIcon.textContent = '🔊';
-                volumeIcon.setAttribute('aria-label', 'Couper le son');
-                isMuted = false;
-            } else {
-                previousVolume = audioElement.volume;
-                audioElement.volume = 0;
-                volumeSlider.value = 0;
-                volumeIcon.textContent = '🔇';
-                volumeIcon.setAttribute('aria-label', 'Remettre le son');
-                isMuted = true;
-            }
-        }
-
-        // Update Now Playing
-        function updateNowPlaying(radio) {
-            playerTitle.textContent = radio.name;
-            playerSubtitle.textContent = `En direct de ${radio.location}`;
-            playerCoverImg.src = radio.logo;
-            playerCoverImg.alt = `Logo ${radio.name}`;
-        }
-
-        // Update Playing Card
-        function updatePlayingCard() {
-            document.querySelectorAll('.radio-card').forEach((card, index) => {
-                if (index === currentRadioIndex) {
-                    card.classList.add('playing');
-                    card.setAttribute('aria-pressed', 'true');
+                if (op.type === 'depense') {
+                    totalDepense += parseFloat(op.montant) || 0;
                 } else {
-                    card.classList.remove('playing');
-                    card.setAttribute('aria-pressed', 'false');
+                    totalRevenu += parseFloat(op.montant) || 0;
+                }
+            });
+            
+            document.getElementById('totalDepense').innerText = totalDepense.toFixed(2) + '€';
+            document.getElementById('argentRestant').innerText = (totalRevenu - totalDepense).toFixed(2) + '€';
+            
+            // Changer la couleur du solde selon s'il est positif ou négatif
+            const soldeElement = document.getElementById('argentRestant');
+            const solde = totalRevenu - totalDepense;
+            if (solde < 0) {
+                soldeElement.style.background = 'var(--danger)';
+            } else {
+                soldeElement.style.background = 'var(--success)';
+            }
+            soldeElement.style.backgroundClip = 'text';
+            soldeElement.style.webkitBackgroundClip = 'text';
+            soldeElement.style.webkitTextFillColor = 'transparent';
+        }
+
+        function ajouterOperation() {
+            const titre = document.getElementById('titre').value.trim();
+            const montant = document.getElementById('montant').value.trim();
+            const date = document.getElementById('date').value.trim() || new Date().toLocaleDateString('fr-FR');
+            const categorie = document.getElementById('categorie').value;
+            const type = document.getElementById('type').value;
+            
+            if (!titre || !montant) {
+                Swal.fire({
+                    title: 'Erreur',
+                    text: 'Titre et montant sont requis',
+                    icon: 'error',
+                    background: '#252732',
+                    color: '#fff',
+                    confirmButtonColor: '#667eea'
+                });
+                return;
+            }
+            
+            operations.push({ titre, montant: parseFloat(montant), date, categorie, type });
+            
+            // Vider les champs
+            document.getElementById('titre').value = '';
+            document.getElementById('montant').value = '';
+            document.getElementById('date').value = '';
+            
+            actualiserTableau();
+            
+            Swal.fire({
+                title: 'Succès!',
+                text: 'Opération ajoutée avec succès',
+                icon: 'success',
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#667eea',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function modifierOperation(index, champ, valeur) {
+            if (champ === 'montant') {
+                valeur = parseFloat(valeur) || 0;
+            }
+            operations[index][champ] = valeur;
+            actualiserTableau();
+        }
+
+        function supprimerOperation(index) {
+            Swal.fire({
+                title: 'Êtes-vous sûr?',
+                text: "Cette action ne peut pas être annulée!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#ff6b6b',
+                cancelButtonColor: '#667eea',
+                confirmButtonText: 'Oui, supprimer!',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    operations.splice(index, 1);
+                    actualiserTableau();
+                    Swal.fire({
+                        title: 'Supprimé!',
+                        text: 'L\'opération a été supprimée.',
+                        icon: 'success',
+                        background: '#252732',
+                        color: '#fff',
+                        confirmButtonColor: '#667eea',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
 
-        // Show Player
-        function showPlayer() {
-            audioPlayer.classList.add('active');
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        operations = data;
+                        actualiserTableau();
+                        Swal.fire({
+                            title: 'Succès!',
+                            text: 'Données importées avec succès',
+                            icon: 'success',
+                            background: '#252732',
+                            color: '#fff',
+                            confirmButtonColor: '#667eea'
+                        });
+                    } else {
+                        throw new Error("Format JSON invalide");
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Erreur',
+                        text: 'Fichier JSON non valide',
+                        icon: 'error',
+                        background: '#252732',
+                        color: '#fff',
+                        confirmButtonColor: '#667eea'
+                    });
+                }
+            };
+            reader.readAsText(file);
         }
 
-        // Volume Control
-        volumeSlider.addEventListener('input', (e) => {
-            const volume = parseFloat(e.target.value);
-            audioElement.volume = volume;
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(operations, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = `budget_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
             
-            if (volume === 0) {
-                volumeIcon.textContent = '🔇';
-                volumeIcon.setAttribute('aria-label', 'Remettre le son');
-                isMuted = true;
-            } else {
-                volumeIcon.textContent = '🔊';
-                volumeIcon.setAttribute('aria-label', 'Couper le son');
-                isMuted = false;
-                previousVolume = volume;
+            Swal.fire({
+                title: 'Exporté!',
+                text: 'Vos données ont été exportées avec succès',
+                icon: 'success',
+                background: '#252732',
+                color: '#fff',
+                confirmButtonColor: '#667eea',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // Initialiser l'affichage
+        actualiserTableau();
+
+        // Ajouter des animations au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.fade-in');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Raccourci clavier pour ajouter une opération
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                ajouterOperation();
             }
         });
-
-        // Keyboard support for volume icon
-        volumeIcon.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleMute();
-            }
-        });
-
-        // Audio Events
-        audioElement.addEventListener('loadstart', () => {
-            playerSubtitle.innerHTML = '<div class="loading"></div> Connexion...';
-        });
-
-        audioElement.addEventListener('canplay', () => {
-            if (currentRadioIndex !== -1) {
-                const radio = radios[currentRadioIndex];
-                playerSubtitle.textContent = `En direct de ${radio.location}`;
-            }
-        });
-
-        audioElement.addEventListener('error', () => {
-            playerSubtitle.textContent = 'Erreur de connexion';
-            visualizer.style.display = 'none';
-            visualizer.setAttribute('aria-hidden', 'true');
-            playBtn.textContent = '▶️';
-            playBtn.setAttribute('aria-label', 'Lecture');
-            isPlaying = false;
-        });
-
-        // Keyboard Shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Don't interfere with form inputs
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            
-            switch(e.code) {
-                case 'Space':
-                    e.preventDefault();
-                    togglePlay();
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    nextRadio();
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    previousRadio();
-                    break;
-                case 'KeyM':
-                    e.preventDefault();
-                    toggleMute();
-                    break;
-            }
-        });
-
-        // Responsive behavior for orientation changes
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                // Force a reflow to handle orientation changes
-                document.body.style.height = '100vh';
-                setTimeout(() => {
-                    document.body.style.height = '';
-                }, 100);
-            }, 100);
-        });
-
-        // Prevent zoom on double tap (iOS)
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
     </script>
 </body>
 </html>
