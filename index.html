@@ -1,750 +1,1872 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionnaire Intelligent de Budget</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discembed Creator - Minou_Offciel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        :root {
-            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --success: linear-gradient(135deg, #81FBB8 0%, #28C76F 100%);
-            --danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            --dark: #0a0a0a;
-            --surface: rgba(255, 255, 255, 0.05);
-            --glass: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.2);
-            --text: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.7);
-        }
+    :root {
+      --primary: #00d4ff;
+      --primary-dark: #0099cc;
+      --secondary: #6366f1;
+      --accent: #8b5cf6;
+      --neon-blue: #00ffff;
+      --neon-purple: #bf5af2;
+      --bg-dark: #0a0b1e;
+      --bg-medium: #0f1122;
+      --bg-light: #151829;
+      --bg-card: #1a1d3a;
+      --glass: rgba(0, 212, 255, 0.05);
+      --glass-border: rgba(0, 212, 255, 0.2);
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow-neon: 0 0 30px rgba(0, 212, 255, 0.3);
+      --shadow-purple: 0 0 30px rgba(139, 92, 246, 0.3);
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark);
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-            min-height: 100vh;
-            color: var(--text);
-            overflow-x: hidden;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0d1421 50%, var(--bg-medium) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 60%),
+        radial-gradient(circle at 80% 20%, var(--accent) 0%, transparent 60%),
+        radial-gradient(circle at 40% 40%, var(--neon-blue) 0%, transparent 60%);
+      opacity: 0.06;
+      filter: blur(120px);
+      z-index: -2;
+      animation: float 25s ease-in-out infinite;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            position: relative;
-        }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(45deg, transparent 30%, rgba(0, 212, 255, 0.03) 50%, transparent 70%),
+        linear-gradient(-45deg, transparent 30%, rgba(139, 92, 246, 0.03) 50%, transparent 70%);
+      z-index: -1;
+      animation: shimmer 8s ease-in-out infinite;
+    }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-            background: var(--primary);
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-            z-index: -1;
-        }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      33% { transform: translate(40px, -30px) scale(1.1) rotate(120deg); }
+      66% { transform: translate(-30px, 25px) scale(0.9) rotate(240deg); }
+    }
 
-        .header h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            background: var(--primary);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            animation: glow 3s ease-in-out infinite alternate;
-        }
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
 
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5)); }
-            to { filter: drop-shadow(0 0 30px rgba(118, 75, 162, 0.8)); }
-        }
+    /* Authentication Modal */
+    .auth-modal {
+      display: flex;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
 
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            font-weight: 300;
-        }
+    .auth-container {
+      background: var(--bg-medium);
+      border: 1px solid var(--glass-border);
+      padding: 3rem;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 450px;
+      position: relative;
+      box-shadow: 
+        0 25px 80px rgba(0, 0, 0, 0.8),
+        var(--shadow-neon);
+      animation: slideUp 0.4s ease;
+    }
 
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
 
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
+    .auth-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-blue), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
 
-        .glass-card:hover::before {
-            left: 100%;
-        }
+    .auth-subtitle {
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
 
-        .form-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
+    .auth-form.hidden {
+      display: none;
+    }
 
-        .input-group {
-            position: relative;
-        }
+    /* User Header */
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(26, 29, 58, 0.7);
+      backdrop-filter: blur(25px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        .input-group input,
-        .input-group select {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-        .input-group select option {
-            background: #1a1a1a;
-            color: #ffffff;
-            padding: 0.5rem;
-        }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
 
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
-        }
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
 
-        .input-group input::placeholder {
-            color: var(--text-muted);
-        }
+    .user-name {
+      font-weight: 600;
+      color: var(--text);
+    }
 
-        .btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    .user-email {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
+    .user-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
 
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
+    .config-selector {
+      padding: 0.5rem 1rem;
+      background: var(--bg-light);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-width: 200px;
+    }
 
-        .btn-accent {
-            background: var(--accent);
-            color: white;
-        }
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      position: relative;
+      z-index: 10;
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
+    .logo-container {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 1rem;
+    }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+    .logo {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-blue), var(--primary), var(--accent), var(--neon-purple));
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: -3px;
+      animation: gradient-flow 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
+    }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
+    @keyframes gradient-flow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
 
-        .btn:hover::before {
-            left: 100%;
-        }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+      font-weight: 300;
+      opacity: 0.9;
+    }
 
-        .search-section {
-            margin-bottom: 2rem;
-        }
+    /* Main Container */
+    .main-container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      position: relative;
+    }
 
-        .search-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            color: var(--text);
-            font-size: 1.1rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
 
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+    /* Glass Panel */
+    .panel {
+      background: rgba(26, 29, 58, 0.7);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(0, 212, 255, 0.1);
+      transition: all 0.4s ease;
+    }
 
-        .table-container {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
 
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .panel:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        var(--shadow-neon),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
 
-        .table th {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-            color: white;
-            padding: 1.5rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
+    .panel:hover::before {
+      opacity: 0.08;
+    }
 
-        .table td {
-            padding: 1.5rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
 
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
+    .section-icon {
+      font-size: 1.6rem;
+      filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+    }
 
-        .table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: scale(1.01);
-        }
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.8rem;
+    }
 
-        .table td[contenteditable="true"] {
-            cursor: text;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.7rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-        .table td[contenteditable="true"]:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="file"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      background: var(--bg-light);
+      border: 2px solid rgba(0, 212, 255, 0.2);
+      border-radius: 16px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.4s ease;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
 
-        .table td[contenteditable="true"]:focus {
-            outline: 2px solid #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary);
+      background: rgba(0, 212, 255, 0.08);
+      box-shadow: 
+        0 0 25px rgba(0, 212, 255, 0.4),
+        inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
 
-        .delete-btn {
-            background: var(--danger);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+      font-family: inherit;
+      line-height: 1.6;
+    }
 
-        .delete-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.4);
-        }
+    input[type="file"] {
+      cursor: pointer;
+      padding: 0.8rem;
+      border-style: dashed;
+    }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
+    input[type="file"]::-webkit-file-upload-button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-right: 1rem;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+    }
 
-        .stat-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+    input[type="file"]::-webkit-file-upload-button:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+    }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary);
-        }
+    /* Buttons */
+    .btn {
+      padding: 1rem 1.8rem;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
 
-        .stat-card:nth-child(2)::before {
-            background: var(--success);
-        }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.6s ease;
+      z-index: 0;
+    }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
+    .btn:hover::before {
+      width: 400px;
+      height: 400px;
+    }
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: var(--primary);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .btn span {
+      position: relative;
+      z-index: 1;
+    }
 
-        .stat-card:nth-child(2) .stat-value {
-            background: var(--success);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--neon-blue));
+      color: var(--bg-dark);
+      box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+    }
 
-        .stat-label {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
+    .btn-primary::before {
+      background: rgba(255, 255, 255, 0.2);
+    }
 
-        .file-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 212, 255, 0.6);
+    }
 
-        .file-input {
-            display: none;
-        }
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      color: white;
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
+    .btn-secondary::before {
+      background: rgba(255, 255, 255, 0.2);
+    }
 
-            .form-section {
-                grid-template-columns: 1fr;
-            }
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(99, 102, 241, 0.6);
+    }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
+    .btn-accent {
+      background: var(--bg-light);
+      color: var(--neon-purple);
+      border: 2px solid var(--neon-purple);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
 
-            .file-actions {
-                flex-direction: column;
-            }
+    .btn-accent:hover {
+      background: var(--neon-purple);
+      color: var(--bg-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(139, 92, 246, 0.7);
+    }
 
-            .table-container {
-                overflow-x: auto;
-            }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    }
 
-            .table {
-                min-width: 600px;
-            }
-        }
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
+    }
 
-        .loading {
-            position: relative;
-            overflow: hidden;
-        }
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
 
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: loading 1.5s infinite;
-        }
+    .btn-link {
+      background: none;
+      color: var(--primary);
+      border: none;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
 
-        @keyframes loading {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+    /* Preview Section */
+    .preview-container {
+      background: var(--bg-medium);
+      border-radius: 20px;
+      padding: 2rem;
+      min-height: 350px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
+    .mentions-preview {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    .embed-preview {
+      display: flex;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      overflow: hidden;
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(0, 212, 255, 0.2);
+      transition: all 0.4s ease;
+    }
+
+    .embed-preview:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.7),
+        0 0 30px rgba(0, 212, 255, 0.4);
+    }
+
+    .embed-color-bar {
+      width: 5px;
+      background: linear-gradient(180deg, var(--primary), var(--neon-blue));
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { 
+        opacity: 1; 
+        box-shadow: 0 0 15px var(--primary);
+      }
+      50% { 
+        opacity: 0.7; 
+        box-shadow: 0 0 25px var(--neon-blue);
+      }
+    }
+
+    .embed-content {
+      padding: 1.5rem;
+      width: 100%;
+    }
+
+    .embed-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      color: var(--text);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .embed-description {
+      font-size: 1rem;
+      color: var(--text-dim);
+      white-space: pre-wrap;
+      margin-bottom: 0.8rem;
+      line-height: 1.6;
+    }
+
+    .embed-image {
+      margin-top: 1.2rem;
+      border-radius: 12px;
+      width: 100%;
+      height: auto;
+      display: block;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease;
+    }
+
+    .embed-image:hover {
+      transform: scale(1.02);
+    }
+
+    .embed-footer {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 1.2rem;
+      opacity: 0.8;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--bg-medium);
+      border: 1px solid var(--glass-border);
+      padding: 2.5rem;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 
+        0 25px 80px rgba(0, 0, 0, 0.8),
+        var(--shadow-neon);
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .modal-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-blue), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-button {
+      font-size: 2rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: none;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-button:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    /* Gallery */
+    .imgbb-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .imgbb-gallery img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      border: 2px solid transparent;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .imgbb-gallery img:hover {
+      border-color: var(--primary);
+      transform: scale(1.08) translateY(-4px);
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.6),
+        0 0 25px rgba(0, 212, 255, 0.5);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Success/Error Messages */
+    .message {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      padding: 1.2rem 1.8rem;
+      border-radius: 16px;
+      font-weight: 600;
+      animation: slideInRight 0.4s ease;
+      z-index: 2000;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(120%); }
+      to { transform: translateX(0); }
+    }
+
+    .message-success {
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      border: 1px solid var(--success);
+    }
+
+    .message-error {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: 1px solid var(--danger);
+    }
+
+    /* Hidden elements */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.8rem;
+      }
+      
+      .panel {
+        padding: 1.8rem;
+      }
+      
+      .btn {
+        font-size: 0.9rem;
+        padding: 0.9rem 1.5rem;
+      }
+
+      .main-container {
+        padding: 0 1rem 3rem;
+      }
+
+      .user-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .user-actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .config-selector {
+        min-width: auto;
+        width: 100%;
+      }
+    }
+
+    /* Additional Effects */
+    .glow-effect {
+      filter: drop-shadow(0 0 10px var(--primary));
+    }
+
+    .pulse-effect {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💰 Budget Master Pro</h1>
-            <p class="subtitle">Gérez vos finances avec style et intelligence</p>
+  <!-- Authentication Modal -->
+  <div class="auth-modal" id="auth-modal">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h2 class="auth-title" id="auth-title">Connexion</h2>
+        <p class="auth-subtitle">Accédez à votre compte Discembed Creator</p>
+      </div>
+
+      <!-- Login Form -->
+      <form class="auth-form" id="login-form">
+        <div class="form-group">
+          <label for="login-email">Adresse Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com" required />
         </div>
 
-        <div class="glass-card fade-in">
-            <div class="form-section">
-                <div class="input-group">
-                    <input id="titre" placeholder="Titre de l'opération">
-                </div>
-                <div class="input-group">
-                    <input id="montant" type="number" placeholder="Montant (€)">
-                </div>
-                <div class="input-group">
-                    <input id="date" placeholder="Date">
-                </div>
-                <div class="input-group">
-                    <select id="categorie">
-                        <option>Alimentation</option>
-                        <option>Loisirs</option>
-                        <option>Abonnements</option>
-                        <option>Transport</option>
-                        <option>Santé</option>
-                        <option>Éducation</option>
-                        <option>Autres</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <select id="type">
-                        <option value="depense">💸 Dépense</option>
-                        <option value="revenu">💰 Revenu</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="ajouterOperation()">
-                ✨ Ajouter l'opération
-            </button>
+        <div class="form-group">
+          <label for="login-password">Mot de Passe</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
         </div>
 
-        <div class="glass-card fade-in search-section">
-            <input id="search" class="search-input" placeholder="🔍 Rechercher par titre, montant ou catégorie..." oninput="actualiserTableau()">
+        <button type="submit" class="btn btn-primary">
+          <span>🔑 Se Connecter</span>
+        </button>
+
+        <button type="button" class="btn-link" onclick="showRegisterForm()">
+          Pas encore de compte ? S'inscrire
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form class="auth-form hidden" id="register-form">
+        <div class="form-group">
+          <label for="register-email">Adresse Email</label>
+          <input type="email" id="register-email" placeholder="votre@email.com" required />
         </div>
 
-        <div class="glass-card fade-in">
-            <div class="file-actions">
-                <input type="file" id="fileInput" class="file-input" onchange="importJSON(event)">
-                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click();">
-                    📥 Importer JSON
-                </button>
-                <button class="btn btn-accent" onclick="exportJSON()">
-                    📤 Exporter JSON
-                </button>
-            </div>
+        <div class="form-group">
+          <label for="register-username">Nom d'Utilisateur</label>
+          <input type="text" id="register-username" placeholder="Votre nom" />
         </div>
 
-        <div class="stats-grid fade-in">
-            <div class="stat-card">
-                <div class="stat-value" id="totalDepense">0€</div>
-                <div class="stat-label">Total Dépenses</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="argentRestant">0€</div>
-                <div class="stat-label">Solde Restant</div>
-            </div>
+        <div class="form-group">
+          <label for="register-password">Mot de Passe</label>
+          <input type="password" id="register-password" placeholder="••••••••" required />
         </div>
 
-        <div class="table-container fade-in">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>📝 Titre</th>
-                        <th>💰 Montant</th>
-                        <th>📅 Date</th>
-                        <th>🏷️ Catégorie</th>
-                        <th>📊 Type</th>
-                        <th>⚡ Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
+        <div class="form-group">
+          <label for="register-password-confirm">Confirmer le Mot de Passe</label>
+          <input type="password" id="register-password-confirm" placeholder="••••••••" required />
         </div>
+
+        <button type="submit" class="btn btn-primary">
+          <span>🚀 Créer un Compte</span>
+        </button>
+
+        <button type="button" class="btn-link" onclick="showLoginForm()">
+          Déjà un compte ? Se connecter
+        </button>
+      </form>
     </div>
+  </div>
 
-    <script>
-        flatpickr("#date", {
-            dateFormat: "d/m/Y",
-            locale: "fr",
-            theme: "dark"
-        });
+  <!-- User Header -->
+  <div class="user-header hidden" id="user-header">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">M</div>
+      <div class="user-details">
+        <div class="user-name" id="user-name">Utilisateur</div>
+        <div class="user-email" id="user-email">user@example.com</div>
+      </div>
+    </div>
+    <div class="user-actions">
+      <select class="config-selector" id="config-selector" onchange="loadConfiguration()">
+        <option value="">Nouvelle configuration</option>
+      </select>
+      <button class="btn btn-small btn-secondary" onclick="saveCurrentConfig()">
+        <span>💾 Sauvegarder</span>
+      </button>
+      <button class="btn btn-small btn-danger" onclick="logout()">
+        <span>🚪 Déconnexion</span>
+      </button>
+    </div>
+  </div>
 
-        let operations = [];
+  <!-- Main App -->
+  <div class="hidden" id="main-app">
+    <header class="header">
+      <div class="logo-container">
+        <h1 class="logo">Discembed Creator</h1>
+        <div class="subtitle">Minou_Offciel • Version 2.0 • Cloud Sync</div>
+      </div>
+    </header>
 
-        function actualiserTableau() {
-            const tbody = document.getElementById('tbody');
-            const searchTerm = document.getElementById('search').value.toLowerCase();
-            tbody.innerHTML = '';
-            
-            let totalDepense = 0;
-            let totalRevenu = 0;
-            
-            const filteredOperations = operations.filter(op => 
-                op.titre.toLowerCase().includes(searchTerm) ||
-                op.montant.toString().includes(searchTerm) ||
-                op.categorie.toLowerCase().includes(searchTerm)
-            );
-            
-            filteredOperations.forEach((op, i) => {
-                const originalIndex = operations.indexOf(op);
-                const typeIcon = op.type === 'depense' ? '💸' : '💰';
-                const typeClass = op.type === 'depense' ? 'text-danger' : 'text-success';
-                
-                tbody.innerHTML += `
-                    <tr class="fade-in">
-                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'titre', this.innerText)">${op.titre}</td>
-                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'montant', this.innerText)">${op.montant}€</td>
-                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'date', this.innerText)">${op.date}</td>
-                        <td contenteditable="true" onblur="modifierOperation(${originalIndex}, 'categorie', this.innerText)">${op.categorie}</td>
-                        <td class="${typeClass}">${typeIcon} ${op.type}</td>
-                        <td>
-                            <button class="delete-btn" onclick="supprimerOperation(${originalIndex})">
-                                🗑️
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                
-                if (op.type === 'depense') {
-                    totalDepense += parseFloat(op.montant) || 0;
-                } else {
-                    totalRevenu += parseFloat(op.montant) || 0;
-                }
-            });
-            
-            document.getElementById('totalDepense').innerText = totalDepense.toFixed(2) + '€';
-            document.getElementById('argentRestant').innerText = (totalRevenu - totalDepense).toFixed(2) + '€';
-            
-            // Changer la couleur du solde selon s'il est positif ou négatif
-            const soldeElement = document.getElementById('argentRestant');
-            const solde = totalRevenu - totalDepense;
-            if (solde < 0) {
-                soldeElement.style.background = 'var(--danger)';
-            } else {
-                soldeElement.style.background = 'var(--success)';
-            }
-            soldeElement.style.backgroundClip = 'text';
-            soldeElement.style.webkitBackgroundClip = 'text';
-            soldeElement.style.webkitTextFillColor = 'transparent';
+    <div class="main-container">
+      <div class="panel">
+        <h2 class="section-header">
+          <span class="section-icon">⚙️</span>
+          Configuration
+        </h2>
+
+        <div class="form-group">
+          <label for="webhook">Webhook Discord</label>
+          <input type="text" id="webhook" placeholder="https://discord.com/api/webhooks/..." oninput="updateEmbed()" />
+        </div>
+
+        <div class="form-group">
+          <label for="username">Nom du Bot</label>
+          <input type="text" id="username" placeholder="Discembed Bot" oninput="updateEmbed()" />
+        </div>
+
+        <div class="form-group">
+          <label for="title">Titre de l'Embed</label>
+          <input type="text" id="title" placeholder="📊 Votre titre ici..." oninput="updateEmbed()" />
+        </div>
+
+        <div class="form-group">
+          <label for="ranking-text">Contenu de l'Embed</label>
+          <textarea id="ranking-text" rows="6" placeholder="Écrivez votre contenu ici..." oninput="updateEmbed()"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="ranking-image">URL de l'Image</label>
+          <input type="text" id="ranking-image" placeholder="https://exemple.com/image.png" oninput="updateEmbed()" />
+        </div>
+
+        <div class="form-group">
+          <label for="image-upload">Upload une Image</label>
+          <input type="file" id="image-upload" accept="image/*" onchange="uploadImage(event)" />
+        </div>
+
+        <div class="form-group">
+          <label for="imgbb-api-key">Clé API ImgBB</label>
+          <input type="text" id="imgbb-api-key" placeholder="Votre clé API ImgBB" oninput="saveAPIKey()" />
+        </div>
+
+        <button class="btn btn-accent" onclick="showGallery()">
+          <span>🖼️ Galerie d'Images</span>
+        </button>
+
+        <div class="form-group">
+          <label for="mention-users">Mentions Utilisateurs (IDs)</label>
+          <input type="text" id="mention-users" placeholder="123456789, 987654321" oninput="updateEmbed()" />
+        </div>
+
+        <div class="form-group">
+          <label for="mention-roles">Mentions Rôles (IDs)</label>
+          <input type="text" id="mention-roles" placeholder="111222333, 444555666" oninput="updateEmbed()" />
+        </div>
+
+        <button class="btn btn-primary" onclick="sendEmbed()">
+          <span>🚀 Envoyer sur Discord</span>
+        </button>
+
+        <button class="btn btn-secondary" onclick="exportJSON()">
+          <span>📥 Exporter Configuration</span>
+        </button>
+
+        <input type="file" id="import-json" accept=".json" onchange="importJSON(event)" style="display: none;" />
+        <button class="btn btn-accent" onclick="document.getElementById('import-json').click()">
+          <span>📤 Importer Configuration</span>
+        </button>
+
+        <button class="btn btn-secondary" onclick="showHistory()">
+          <span>📊 Historique des Envois</span>
+        </button>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-header">
+          <span class="section-icon">👁️</span>
+          Aperçu Live
+        </h2>
+
+        <div class="preview-container">
+          <div id="mentions-preview" class="mentions-preview"></div>
+          <div id="preview-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Gallery -->
+  <div class="modal" id="gallery-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🖼️ Galerie ImgBB</h3>
+        <button class="close-button" onclick="hideGallery()">×</button>
+      </div>
+      <div class="imgbb-gallery" id="imgbb-gallery"></div>
+    </div>
+  </div>
+
+  <!-- Modal History -->
+  <div class="modal" id="history-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📊 Historique des Envois</h3>
+        <button class="close-button" onclick="hideHistory()">×</button>
+      </div>
+      <div id="history-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration API
+    const API_BASE = '/api.php'; // Changez selon votre configuration
+    
+    // Variables globales
+    let currentUser = null;
+    let authToken = null;
+    let currentEmbedId = null;
+    let configurations = [];
+    let embed = {
+      title: "",
+      description: "",
+      color: 0x00d4ff,
+      footer: { text: "" }
+    };
+    let currentWebhook = "";
+    let currentUsername = "";
+    let mentionUsers = [];
+    let mentionRoles = [];
+
+    // Utilitaires
+    function getFrenchDateTime() {
+      return new Date().toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function showMessage(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `message message-${type}`;
+      msg.textContent = text;
+      document.body.appendChild(msg);
+      
+      setTimeout(() => {
+        msg.style.animation = 'slideInRight 0.4s ease reverse';
+        setTimeout(() => msg.remove(), 400);
+      }, 4000);
+    }
+
+    function isValidUrl(string) {
+      try {
+        new URL(string);
+        return string.startsWith('http://') || string.startsWith('https://');
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // API Functions
+    async function apiCall(endpoint, method = 'GET', data = null) {
+      const options = {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      if (authToken) {
+        options.headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      if (data) {
+        options.body = JSON.stringify(data);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/${endpoint}`, options);
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || 'Erreur API');
         }
 
-        function ajouterOperation() {
-            const titre = document.getElementById('titre').value.trim();
-            const montant = document.getElementById('montant').value.trim();
-            const date = document.getElementById('date').value.trim() || new Date().toLocaleDateString('fr-FR');
-            const categorie = document.getElementById('categorie').value;
-            const type = document.getElementById('type').value;
+        return result.data;
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
+
+    // Authentication Functions
+    async function login(email, password) {
+      try {
+        const data = await apiCall('login', 'POST', { email, password });
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('auth_token', authToken);
+        localStorage.setItem('current_user', JSON.stringify(currentUser));
+        showMainApp();
+        showMessage('✅ Connexion réussie !', 'success');
+        loadConfigurations();
+      } catch (error) {
+        showMessage(`❌ Erreur de connexion: ${error.message}`, 'error');
+      }
+    }
+
+    async function register(email, password, username) {
+      try {
+        const data = await apiCall('register', 'POST', { email, password, username });
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('auth_token', authToken);
+        localStorage.setItem('current_user', JSON.stringify(currentUser));
+        showMainApp();
+        showMessage('✅ Compte créé avec succès !', 'success');
+        loadConfigurations();
+      } catch (error) {
+        showMessage(`❌ Erreur d'inscription: ${error.message}`, 'error');
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('current_user');
+      showAuthModal();
+      showMessage('✅ Déconnexion réussie', 'success');
+    }
+
+    // UI Functions
+    function showAuthModal() {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('main-app').classList.add('hidden');
+      document.getElementById('user-header').classList.add('hidden');
+    }
+
+    function showMainApp() {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('main-app').classList.remove('hidden');
+      document.getElementById('user-header').classList.remove('hidden');
+      
+      // Mettre à jour les infos utilisateur
+      if (currentUser) {
+        document.getElementById('user-name').textContent = currentUser.username || 'Utilisateur';
+        document.getElementById('user-email').textContent = currentUser.email;
+        document.getElementById('user-avatar').textContent = (currentUser.username || currentUser.email).charAt(0).toUpperCase();
+      }
+    }
+
+    function showLoginForm() {
+      document.getElementById('auth-title').textContent = 'Connexion';
+      document.getElementById('login-form').classList.remove('hidden');
+      document.getElementById('register-form').classList.add('hidden');
+    }
+
+    function showRegisterForm() {
+      document.getElementById('auth-title').textContent = 'Inscription';
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('register-form').classList.remove('hidden');
+    }
+
+    // Configuration Functions
+    async function loadConfigurations() {
+      try {
+        const data = await apiCall('embeds');
+        configurations = data.embeds;
+        updateConfigSelector();
+        
+        // Charger la configuration par défaut
+        const defaultConfig = configurations.find(c => c.is_default);
+        if (defaultConfig) {
+          loadConfigurationData(defaultConfig);
+        }
+      } catch (error) {
+        showMessage(`❌ Erreur de chargement: ${error.message}`, 'error');
+      }
+    }
+
+    function updateConfigSelector() {
+      const selector = document.getElementById('config-selector');
+      selector.innerHTML = '<option value="">Nouvelle configuration</option>';
+      
+      configurations.forEach(config => {
+        const option = document.createElement('option');
+        option.value = config.id;
+        option.textContent = config.name + (config.is_default ? ' (Défaut)' : '');
+        selector.appendChild(option);
+      });
+    }
+
+    function loadConfigurationData(config) {
+      currentEmbedId = config.id;
+      document.getElementById('webhook').value = config.webhook || '';
+      document.getElementById('username').value = config.bot_username || '';
+      document.getElementById('title').value = config.title || '';
+      document.getElementById('ranking-text').value = config.description || '';
+      document.getElementById('ranking-image').value = config.image_url || '';
+      document.getElementById('mention-users').value = config.mention_users || '';
+      document.getElementById('mention-roles').value = config.mention_roles || '';
+      document.getElementById('imgbb-api-key').value = config.imgbb_api_key || '';
+      
+      // Mettre à jour le sélecteur
+      document.getElementById('config-selector').value = config.id;
+      
+      updateEmbed();
+    }
+
+    async function loadConfiguration() {
+      const selector = document.getElementById('config-selector');
+      const configId = selector.value;
+      
+      if (!configId) {
+        // Nouvelle configuration
+        currentEmbedId = null;
+        document.getElementById('webhook').value = '';
+        document.getElementById('username').value = 'Discembed Bot';
+        document.getElementById('title').value = '';
+        document.getElementById('ranking-text').value = '';
+        document.getElementById('ranking-image').value = '';
+        document.getElementById('mention-users').value = '';
+        document.getElementById('mention-roles').value = '';
+        updateEmbed();
+        return;
+      }
+      
+      try {
+        const data = await apiCall(`embeds/${configId}`);
+        loadConfigurationData(data.embed);
+        showMessage('✅ Configuration chargée', 'success');
+      } catch (error) {
+        showMessage(`❌ Erreur de chargement: ${error.message}`, 'error');
+      }
+    }
+
+    async function saveCurrentConfig() {
+      const configData = {
+        name: prompt('Nom de la configuration:', 'Ma configuration') || 'Configuration sans nom',
+        webhook: document.getElementById('webhook').value.trim(),
+        bot_username: document.getElementById('username').value.trim(),
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('ranking-text').value.trim(),
+        image_url: document.getElementById('ranking-image').value.trim(),
+        mention_users: document.getElementById('mention-users').value.trim(),
+        mention_roles: document.getElementById('mention-roles').value.trim(),
+        imgbb_api_key: document.getElementById('imgbb-api-key').value.trim(),
+        is_default: false
+      };
+
+      try {
+        if (currentEmbedId) {
+          // Mettre à jour la configuration existante
+          await apiCall(`embeds/${currentEmbedId}`, 'PUT', configData);
+          showMessage('✅ Configuration mise à jour', 'success');
+        } else {
+          // Créer une nouvelle configuration
+          const data = await apiCall('embeds', 'POST', configData);
+          currentEmbedId = data.embed.id;
+          showMessage('✅ Configuration sauvegardée', 'success');
+        }
+        
+        loadConfigurations();
+      } catch (error) {
+        showMessage(`❌ Erreur de sauvegarde: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-save on change
+    let saveTimeout;
+    function autoSave() {
+      if (!currentEmbedId) return;
+      
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(async () => {
+        const configData = {
+          webhook: document.getElementById('webhook').value.trim(),
+          bot_username: document.getElementById('username').value.trim(),
+          title: document.getElementById('title').value.trim(),
+          description: document.getElementById('ranking-text').value.trim(),
+          image_url: document.getElementById('ranking-image').value.trim(),
+          mention_users: document.getElementById('mention-users').value.trim(),
+          mention_roles: document.getElementById('mention-roles').value.trim(),
+          imgbb_api_key: document.getElementById('imgbb-api-key').value.trim()
+        };
+
+        try {
+          await apiCall(`embeds/${currentEmbedId}`, 'PUT', configData);
+        } catch (error) {
+          console.log('Auto-save failed:', error);
+        }
+      }, 2000);
+    }
+
+    function updateEmbed() {
+      // Récupération des valeurs avec nettoyage
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("ranking-text").value.trim();
+      const imageUrl = document.getElementById("ranking-image").value.trim();
+      
+      // Mise à jour de l'embed avec validation
+      embed.title = title || "Titre de l'embed";
+      embed.description = description || "Description de l'embed";
+      embed.color = 0x00d4ff;
+      
+      // Image seulement si URL valide
+      if (imageUrl && isValidUrl(imageUrl)) {
+        embed.image = { url: imageUrl };
+      } else {
+        delete embed.image;
+      }
+      
+      embed.footer = { 
+        text: `Créé avec Discembed Creator x Minou_Offciel • ${getFrenchDateTime()}` 
+      };
+      
+      // Mise à jour des variables globales
+      currentWebhook = document.getElementById("webhook").value.trim();
+      currentUsername = document.getElementById("username").value.trim() || "Discembed Bot";
+      
+      const userIds = document.getElementById("mention-users").value.trim();
+      const roleIds = document.getElementById("mention-roles").value.trim();
+      
+      mentionUsers = userIds ? userIds.split(",").map(id => id.trim()).filter(Boolean) : [];
+      mentionRoles = roleIds ? roleIds.split(",").map(id => id.trim()).filter(Boolean) : [];
+      
+      renderPreview();
+      autoSave();
+    }
+
+    function renderPreview() {
+      const preview = document.getElementById("preview-area");
+      const mentionsDiv = document.getElementById("mentions-preview");
+      preview.innerHTML = "";
+      mentionsDiv.innerHTML = "";
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "embed-preview";
+
+      const colorBar = document.createElement("div");
+      colorBar.className = "embed-color-bar";
+
+      const content = document.createElement("div");
+      content.className = "embed-content";
+      
+      // Construction du HTML avec validation
+      let embedHTML = `
+        <div class="embed-title">${embed.title}</div>
+        <div class="embed-description">${embed.description}</div>
+      `;
+      
+      // Ajouter l'image seulement si elle existe et est valide
+      if (embed.image && embed.image.url) {
+        embedHTML += `<img class="embed-image" src="${embed.image.url}" onerror="this.style.display='none'" />`;
+      }
+      
+      embedHTML += `<div class="embed-footer">${embed.footer.text}</div>`;
+      
+      content.innerHTML = embedHTML;
+
+      // Affichage des mentions
+      const combinedMentions = [
+        ...mentionUsers.map(id => `<@${id}>`),
+        ...mentionRoles.map(id => `<@&${id}>`)
+      ];
+      
+      if (combinedMentions.length) {
+        mentionsDiv.innerHTML = "📢 Mentions : " + combinedMentions.join(" ");
+      }
+
+      wrapper.appendChild(colorBar);
+      wrapper.appendChild(content);
+      preview.appendChild(wrapper);
+    }
+
+    async function sendEmbed() {
+      if (!currentWebhook) {
+        showMessage("❌ Veuillez entrer un webhook Discord valide", "error");
+        return;
+      }
+
+      if (!currentWebhook.includes('discord.com/api/webhooks/')) {
+        showMessage("❌ URL de webhook invalide", "error");
+        return;
+      }
+
+      const btn = event.target;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<span class="loading"></span> Envoi en cours...';
+      btn.disabled = true;
+
+      try {
+        // Validation et nettoyage de l'embed
+        const cleanEmbed = {};
+
+        // Titre (obligatoire pour un embed valide)
+        const title = document.getElementById("title").value.trim();
+        if (title) {
+          cleanEmbed.title = title.substring(0, 256); // Max 256 caractères
+        }
+
+        // Description
+        const description = document.getElementById("ranking-text").value.trim();
+        if (description) {
+          cleanEmbed.description = description.substring(0, 4096); // Max 4096 caractères
+        }
+
+        // Si ni titre ni description, on refuse l'envoi
+        if (!cleanEmbed.title && !cleanEmbed.description) {
+          showMessage("❌ Veuillez remplir au moins le titre ou la description", "error");
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+          return;
+        }
+
+        // Couleur
+        cleanEmbed.color = 0x00d4ff;
+
+        // Image (seulement si URL valide)
+        const imageUrl = document.getElementById("ranking-image").value.trim();
+        if (imageUrl && isValidUrl(imageUrl)) {
+          cleanEmbed.image = { url: imageUrl };
+        }
+
+        // Footer
+        cleanEmbed.footer = {
+          text: `Créé avec Discembed Creator x Minou_Offciel • ${getFrenchDateTime()}`
+        };
+
+        // Timestamp
+        cleanEmbed.timestamp = new Date().toISOString();
+
+        // Préparation du contenu avec mentions
+        const content = [
+          ...mentionUsers.map(id => `<@${id}>`),
+          ...mentionRoles.map(id => `<@&${id}>`)
+        ].join(" ");
+
+        const payload = {
+          embeds: [cleanEmbed]
+        };
+
+        // Ajouter le nom d'utilisateur si spécifié
+        if (currentUsername.trim()) {
+          payload.username = currentUsername.trim().substring(0, 80); // Max 80 caractères
+        }
+
+        // Ajouter le contenu seulement s'il y a des mentions
+        if (content.trim()) {
+          payload.content = content.trim().substring(0, 2000); // Max 2000 caractères
+        }
+
+        console.log('Payload envoyé:', JSON.stringify(payload, null, 2));
+
+        const response = await fetch(currentWebhook, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok || response.status === 204) {
+          showMessage("✅ Embed envoyé avec succès !", "success");
+          
+          // Log dans l'historique
+          if (authToken) {
+            try {
+              await apiCall('history', 'POST', {
+                webhook: currentWebhook,
+                title: cleanEmbed.title || '',
+                description: cleanEmbed.description || '',
+                image_url: imageUrl,
+                mentions: content,
+                status: 'success'
+              });
+            } catch (error) {
+              console.log('Failed to log history:', error);
+            }
+          }
+        } else {
+          const errorText = await response.text();
+          console.error('Erreur Discord:', response.status, errorText);
+          
+          let errorMessage = '';
+          if (response.status === 400) {
+            errorMessage = "❌ Données invalides - Vérifiez vos champs (titre/description requis)";
+          } else if (response.status === 401) {
+            errorMessage = "❌ Webhook non autorisé";
+          } else if (response.status === 404) {
+            errorMessage = "❌ Webhook introuvable";
+          } else if (response.status === 429) {
+            errorMessage = "❌ Trop de requêtes - Attendez avant de réessayer";
+          } else {
+            errorMessage = `❌ Erreur ${response.status} - Vérifiez votre webhook`;
+          }
+          
+          showMessage(errorMessage, "error");
+          
+          // Log dans l'historique
+          if (authToken) {
+            try {
+              await apiCall('history', 'POST', {
+                webhook: currentWebhook,
+                title: cleanEmbed.title || '',
+                description: cleanEmbed.description || '',
+                image_url: imageUrl,
+                mentions: content,
+                status: 'error',
+                error_message: errorMessage
+              });
+            } catch (error) {
+              console.log('Failed to log history:', error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Erreur réseau:', error);
+        showMessage("❌ Erreur de connexion - Vérifiez votre internet", "error");
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+      }
+    }
+
+    function exportJSON() {
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("ranking-text").value.trim();
+      const imageUrl = document.getElementById("ranking-image").value.trim();
+      
+      const data = {
+        webhook: currentWebhook,
+        username: currentUsername,
+        title: title,
+        description: description,
+        image: imageUrl,
+        mentions_users: mentionUsers,
+        mentions_roles: mentionRoles,
+        imgbb_api_key: document.getElementById("imgbb-api-key").value.trim()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `discembed_config_${Date.now()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      showMessage("✅ Configuration exportée", "success");
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          document.getElementById("webhook").value = data.webhook || "";
+          document.getElementById("username").value = data.username || "";
+          document.getElementById("title").value = data.title || "";
+          document.getElementById("ranking-text").value = data.description || "";
+          document.getElementById("ranking-image").value = data.image || "";
+          document.getElementById("mention-users").value = (data.mentions_users || []).join(", ");
+          document.getElementById("mention-roles").value = (data.mentions_roles || []).join(", ");
+          
+          if (data.imgbb_api_key) {
+            document.getElementById("imgbb-api-key").value = data.imgbb_api_key;
+          }
+          
+          updateEmbed();
+          showMessage("✅ Configuration importée avec succès", "success");
+        } catch (error) {
+          console.error('Erreur de parsing JSON:', error);
+          showMessage("❌ Fichier JSON invalide", "error");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function saveAPIKey() {
+      const key = document.getElementById("imgbb-api-key").value.trim();
+      if (key) {
+        showMessage("✅ Clé API sauvegardée", "success");
+      }
+      autoSave();
+    }
+
+    async function uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const apiKey = document.getElementById("imgbb-api-key").value.trim();
+      
+      if (!apiKey) {
+        showMessage("❌ Clé API ImgBB manquante", "error");
+        return;
+      }
+
+      // Vérifier la taille du fichier (max 32MB)
+      if (file.size > 32 * 1024 * 1024) {
+        showMessage("❌ Fichier trop volumineux (max 32MB)", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function () {
+        try {
+          const base64Image = reader.result.split(',')[1];
+          const formData = new FormData();
+          formData.append('image', base64Image);
+
+          showMessage("📤 Upload en cours...", "success");
+
+          const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            const imageUrl = data.data.url;
+            document.getElementById('ranking-image').value = imageUrl;
+            updateEmbed();
             
-            if (!titre || !montant) {
-                Swal.fire({
-                    title: 'Erreur',
-                    text: 'Titre et montant sont requis',
-                    icon: 'error',
-                    background: '#252732',
-                    color: '#fff',
-                    confirmButtonColor: '#667eea'
+            // Sauvegarder dans la galerie cloud
+            if (authToken) {
+              try {
+                await apiCall('images', 'POST', {
+                  image_url: imageUrl,
+                  original_filename: file.name,
+                  imgbb_delete_url: data.data.delete_url
                 });
-                return;
+              } catch (error) {
+                console.log('Failed to save image to gallery:', error);
+              }
             }
             
-            operations.push({ titre, montant: parseFloat(montant), date, categorie, type });
-            
-            // Vider les champs
-            document.getElementById('titre').value = '';
-            document.getElementById('montant').value = '';
-            document.getElementById('date').value = '';
-            
-            actualiserTableau();
-            
-            Swal.fire({
-                title: 'Succès!',
-                text: 'Opération ajoutée avec succès',
-                icon: 'success',
-                background: '#252732',
-                color: '#fff',
-                confirmButtonColor: '#667eea',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            showMessage("✅ Image uploadée avec succès !", "success");
+          } else {
+            console.error('Erreur ImgBB:', data);
+            showMessage("❌ Erreur lors de l'upload - Vérifiez votre clé API", "error");
+          }
+        } catch (error) {
+          console.error('Erreur upload:', error);
+          showMessage("❌ Erreur réseau lors de l'upload", "error");
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    async function renderGallery() {
+      const gallery = document.getElementById("imgbb-gallery");
+      gallery.innerHTML = "";
+
+      if (!authToken) {
+        gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Connectez-vous pour voir votre galerie</p>';
+        return;
+      }
+
+      try {
+        const data = await apiCall('images');
+        const images = data.images;
+
+        if (images.length === 0) {
+          gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Aucune image dans la galerie</p>';
+          return;
         }
 
-        function modifierOperation(index, champ, valeur) {
-            if (champ === 'montant') {
-                valeur = parseFloat(valeur) || 0;
-            }
-            operations[index][champ] = valeur;
-            actualiserTableau();
-        }
-
-        function supprimerOperation(index) {
-            Swal.fire({
-                title: 'Êtes-vous sûr?',
-                text: "Cette action ne peut pas être annulée!",
-                icon: 'warning',
-                showCancelButton: true,
-                background: '#252732',
-                color: '#fff',
-                confirmButtonColor: '#ff6b6b',
-                cancelButtonColor: '#667eea',
-                confirmButtonText: 'Oui, supprimer!',
-                cancelButtonText: 'Annuler'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    operations.splice(index, 1);
-                    actualiserTableau();
-                    Swal.fire({
-                        title: 'Supprimé!',
-                        text: 'L\'opération a été supprimée.',
-                        icon: 'success',
-                        background: '#252732',
-                        color: '#fff',
-                        confirmButtonColor: '#667eea',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
-
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (Array.isArray(data)) {
-                        operations = data;
-                        actualiserTableau();
-                        Swal.fire({
-                            title: 'Succès!',
-                            text: 'Données importées avec succès',
-                            icon: 'success',
-                            background: '#252732',
-                            color: '#fff',
-                            confirmButtonColor: '#667eea'
-                        });
-                    } else {
-                        throw new Error("Format JSON invalide");
-                    }
-                } catch (error) {
-                    Swal.fire({
-                        title: 'Erreur',
-                        text: 'Fichier JSON non valide',
-                        icon: 'error',
-                        background: '#252732',
-                        color: '#fff',
-                        confirmButtonColor: '#667eea'
-                    });
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(operations, null, 2));
-            const a = document.createElement('a');
-            a.href = dataStr;
-            a.download = `budget_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            Swal.fire({
-                title: 'Exporté!',
-                text: 'Vos données ont été exportées avec succès',
-                icon: 'success',
-                background: '#252732',
-                color: '#fff',
-                confirmButtonColor: '#667eea',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-
-        // Initialiser l'affichage
-        actualiserTableau();
-
-        // Ajouter des animations au chargement
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.fade-in');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
+        images.forEach(imageData => {
+          const img = document.createElement("img");
+          img.src = imageData.image_url;
+          img.title = `Cliquer pour utiliser cette image${imageData.original_filename ? ` (${imageData.original_filename})` : ''}`;
+          img.onclick = () => {
+            document.getElementById("ranking-image").value = imageData.image_url;
+            updateEmbed();
+            hideGallery();
+            showMessage("✅ Image sélectionnée", "success");
+          };
+          gallery.appendChild(img);
         });
+      } catch (error) {
+        gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Erreur de chargement de la galerie</p>';
+        console.error('Error loading gallery:', error);
+      }
+    }
 
-        // Raccourci clavier pour ajouter une opération
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                ajouterOperation();
-            }
+    function showGallery() {
+      document.getElementById("gallery-modal").style.display = "flex";
+      renderGallery();
+    }
+
+    function hideGallery() {
+      document.getElementById("gallery-modal").style.display = "none";
+    }
+
+    async function showHistory() {
+      if (!authToken) {
+        showMessage("❌ Connectez-vous pour voir l'historique", "error");
+        return;
+      }
+
+      document.getElementById("history-modal").style.display = "flex";
+      const content = document.getElementById("history-content");
+      content.innerHTML = '<p style="text-align: center;">Chargement...</p>';
+
+      try {
+        const data = await apiCall('history');
+        const history = data.history;
+
+        if (history.length === 0) {
+          content.innerHTML = '<p style="text-align: center; color: var(--text-dim);">Aucun envoi dans l\'historique</p>';
+          return;
+        }
+
+        let historyHTML = '<div style="max-height: 400px; overflow-y: auto;">';
+        history.forEach(entry => {
+          const date = new Date(entry.sent_at).toLocaleString('fr-FR');
+          const status = entry.status === 'success' ? '✅' : '❌';
+          const statusColor = entry.status === 'success' ? 'var(--success)' : 'var(--danger)';
+          
+          historyHTML += `
+            <div style="padding: 1rem; margin-bottom: 1rem; background: var(--bg-light); border-radius: 12px; border-left: 4px solid ${statusColor};">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-weight: 600;">${status} ${entry.title || 'Embed sans titre'}</span>
+                <span style="font-size: 0.8rem; color: var(--text-dim);">${date}</span>
+              </div>
+              ${entry.description ? `<p style="color: var(--text-dim); margin-bottom: 0.5rem;">${entry.description.substring(0, 100)}${entry.description.length > 100 ? '...' : ''}</p>` : ''}
+              ${entry.mentions ? `<p style="color: var(--primary); font-size: 0.8rem;">📢 ${entry.mentions}</p>` : ''}
+              ${entry.error_message ? `<p style="color: var(--danger); font-size: 0.8rem;">❌ ${entry.error_message}</p>` : ''}
+            </div>
+          `;
         });
-    </script>
+        historyHTML += '</div>';
+
+        content.innerHTML = historyHTML;
+      } catch (error) {
+        content.innerHTML = '<p style="text-align: center; color: var(--danger);">Erreur de chargement de l\'historique</p>';
+        console.error('Error loading history:', error);
+      }
+    }
+
+    function hideHistory() {
+      document.getElementById("history-modal").style.display = "none";
+    }
+
+    // Event Listeners
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      await login(email, password);
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('register-email').value;
+      const username = document.getElementById('register-username').value;
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-password-confirm').value;
+      
+      if (password !== confirmPassword) {
+        showMessage('❌ Les mots de passe ne correspondent pas', 'error');
+        return;
+      }
+      
+      await register(email, password, username);
+    });
+
+    // Fermer les modals en cliquant à l'extérieur
+    window.onclick = function(event) {
+      const galleryModal = document.getElementById("gallery-modal");
+      const historyModal = document.getElementById("history-modal");
+      
+      if (event.target === galleryModal) {
+        hideGallery();
+      }
+      if (event.target === historyModal) {
+        hideHistory();
+      }
+    }
+
+    // Raccourcis clavier
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        hideGallery();
+        hideHistory();
+      }
+      if (event.ctrlKey && event.key === 'Enter') {
+        sendEmbed();
+      }
+    });
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      // Vérifier si l'utilisateur est déjà connecté
+      const savedToken = localStorage.getItem('auth_token');
+      const savedUser = localStorage.getItem('current_user');
+      
+      if (savedToken && savedUser) {
+        authToken = savedToken;
+        currentUser = JSON.parse(savedUser);
+        showMainApp();
+        loadConfigurations();
+      } else {
+        showAuthModal();
+      }
+      
+      updateEmbed();
+      
+      // Animation d'entrée
+      setTimeout(() => {
+        document.querySelectorAll('.panel').forEach((panel, index) => {
+          panel.style.animation = `slideUp 0.6s ease ${index * 0.2}s both`;
+        });
+      }, 100);
+    });
+  </script>
 </body>
 </html>
