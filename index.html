@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Discembed Creator - Minou_Offciel</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+  
   <style>
     * {
       margin: 0;
@@ -86,131 +93,6 @@
       50% { opacity: 0.7; }
     }
 
-    /* Authentication Modal */
-    .auth-modal {
-      display: flex;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .auth-container {
-      background: var(--bg-medium);
-      border: 1px solid var(--glass-border);
-      padding: 3rem;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 450px;
-      position: relative;
-      box-shadow: 
-        0 25px 80px rgba(0, 0, 0, 0.8),
-        var(--shadow-neon);
-      animation: slideUp 0.4s ease;
-    }
-
-    .auth-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .auth-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--neon-blue), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-    }
-
-    .auth-subtitle {
-      color: var(--text-dim);
-      font-size: 1rem;
-    }
-
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .auth-form.hidden {
-      display: none;
-    }
-
-    /* User Header */
-    .user-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(26, 29, 58, 0.7);
-      backdrop-filter: blur(25px);
-      border-bottom: 1px solid var(--glass-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: white;
-    }
-
-    .user-details {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .user-name {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .user-email {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-
-    .user-actions {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .config-selector {
-      padding: 0.5rem 1rem;
-      background: var(--bg-light);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 0.9rem;
-      cursor: pointer;
-      min-width: 200px;
-    }
-
     /* Header */
     .header {
       text-align: center;
@@ -250,6 +132,116 @@
       margin-top: 0.5rem;
       font-weight: 300;
       opacity: 0.9;
+    }
+
+    /* Auth Section */
+    .auth-section {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(26, 29, 58, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    }
+
+    .user-name {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 11, 30, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .login-card {
+      background: var(--bg-medium);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+      box-shadow: 
+        0 25px 80px rgba(0, 0, 0, 0.8),
+        var(--shadow-neon);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-blue), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    .login-subtitle {
+      color: var(--text-dim);
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+    }
+
+    .google-login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: white;
+      color: #333;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .google-login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
     }
 
     /* Main Container */
@@ -316,7 +308,7 @@
     .section-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      justify-content: space-between;
       margin-bottom: 2rem;
       font-size: 1.4rem;
       font-weight: 700;
@@ -324,9 +316,37 @@
       text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
     }
 
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     .section-icon {
       font-size: 1.6rem;
       filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+    }
+
+    .cloud-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cloud-icon {
+      font-size: 1rem;
+    }
+
+    .status-online {
+      color: var(--success);
+    }
+
+    .status-offline {
+      color: var(--warning);
     }
 
     /* Form Elements */
@@ -345,11 +365,8 @@
     }
 
     input[type="text"],
-    input[type="email"],
-    input[type="password"],
     input[type="file"],
-    textarea,
-    select {
+    textarea {
       width: 100%;
       padding: 1rem 1.2rem;
       background: var(--bg-light);
@@ -363,10 +380,7 @@
     }
 
     input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    textarea:focus,
-    select:focus {
+    textarea:focus {
       border-color: var(--primary);
       background: rgba(0, 212, 255, 0.08);
       box-shadow: 
@@ -500,25 +514,20 @@
       box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
     }
 
+    .btn-danger::before {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
     .btn-danger:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
     }
 
     .btn-small {
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .btn-link {
-      background: none;
-      color: var(--primary);
-      border: none;
-      text-decoration: underline;
-      font-size: 0.9rem;
-      padding: 0.5rem;
-      cursor: pointer;
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      width: auto;
+      margin: 0;
     }
 
     /* Preview Section */
@@ -614,6 +623,51 @@
       color: var(--text-muted);
       margin-top: 1.2rem;
       opacity: 0.8;
+    }
+
+    /* Saved Configs */
+    .saved-configs {
+      margin-top: 2rem;
+      border-top: 1px solid rgba(0, 212, 255, 0.2);
+      padding-top: 2rem;
+    }
+
+    .config-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-light);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .config-item:hover {
+      background: rgba(0, 212, 255, 0.05);
+      border-color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .config-info {
+      flex: 1;
+    }
+
+    .config-name {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .config-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .config-actions {
+      display: flex;
+      gap: 0.5rem;
     }
 
     /* Modal */
@@ -723,26 +777,6 @@
         0 0 25px rgba(0, 212, 255, 0.5);
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 12px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg-dark);
-      border-radius: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, var(--primary), var(--accent));
-      border-radius: 6px;
-      transition: background 0.3s ease;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
-    }
-
     /* Loading Animation */
     .loading {
       display: inline-block;
@@ -790,9 +824,24 @@
       border: 1px solid var(--danger);
     }
 
-    /* Hidden elements */
-    .hidden {
-      display: none !important;
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
     }
 
     /* Responsive */
@@ -814,217 +863,142 @@
         padding: 0 1rem 3rem;
       }
 
-      .user-header {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-      }
-
-      .user-actions {
-        width: 100%;
+      .auth-section {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 2rem;
         justify-content: center;
       }
-
-      .config-selector {
-        min-width: auto;
-        width: 100%;
-      }
-    }
-
-    /* Additional Effects */
-    .glow-effect {
-      filter: drop-shadow(0 0 10px var(--primary));
-    }
-
-    .pulse-effect {
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <!-- Authentication Modal -->
-  <div class="auth-modal" id="auth-modal">
-    <div class="auth-container">
-      <div class="auth-header">
-        <h2 class="auth-title" id="auth-title">Connexion</h2>
-        <p class="auth-subtitle">Accédez à votre compte Discembed Creator</p>
-      </div>
-
-      <!-- Login Form -->
-      <form class="auth-form" id="login-form">
-        <div class="form-group">
-          <label for="login-email">Adresse Email</label>
-          <input type="email" id="login-email" placeholder="votre@email.com" required />
-        </div>
-
-        <div class="form-group">
-          <label for="login-password">Mot de Passe</label>
-          <input type="password" id="login-password" placeholder="••••••••" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          <span>🔑 Se Connecter</span>
-        </button>
-
-        <button type="button" class="btn-link" onclick="showRegisterForm()">
-          Pas encore de compte ? S'inscrire
-        </button>
-      </form>
-
-      <!-- Register Form -->
-      <form class="auth-form hidden" id="register-form">
-        <div class="form-group">
-          <label for="register-email">Adresse Email</label>
-          <input type="email" id="register-email" placeholder="votre@email.com" required />
-        </div>
-
-        <div class="form-group">
-          <label for="register-username">Nom d'Utilisateur</label>
-          <input type="text" id="register-username" placeholder="Votre nom" />
-        </div>
-
-        <div class="form-group">
-          <label for="register-password">Mot de Passe</label>
-          <input type="password" id="register-password" placeholder="••••••••" required />
-        </div>
-
-        <div class="form-group">
-          <label for="register-password-confirm">Confirmer le Mot de Passe</label>
-          <input type="password" id="register-password-confirm" placeholder="••••••••" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          <span>🚀 Créer un Compte</span>
-        </button>
-
-        <button type="button" class="btn-link" onclick="showLoginForm()">
-          Déjà un compte ? Se connecter
-        </button>
-      </form>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <h2 class="login-title">🚀 Discembed Creator</h2>
+      <p class="login-subtitle">Connectez-vous avec Google pour synchroniser toutes vos configurations dans le cloud</p>
+      <button class="google-login-btn" onclick="signInWithGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Se connecter avec Google
+      </button>
     </div>
   </div>
 
-  <!-- User Header -->
-  <div class="user-header hidden" id="user-header">
+  <!-- Auth Section -->
+  <div id="auth-section" class="auth-section" style="display: none;">
     <div class="user-info">
-      <div class="user-avatar" id="user-avatar">M</div>
-      <div class="user-details">
-        <div class="user-name" id="user-name">Utilisateur</div>
-        <div class="user-email" id="user-email">user@example.com</div>
-      </div>
+      <img id="user-avatar" class="user-avatar" src="" alt="Avatar">
+      <span id="user-name" class="user-name"></span>
     </div>
-    <div class="user-actions">
-      <select class="config-selector" id="config-selector" onchange="loadConfiguration()">
-        <option value="">Nouvelle configuration</option>
-      </select>
-      <button class="btn btn-small btn-secondary" onclick="saveCurrentConfig()">
-        <span>💾 Sauvegarder</span>
-      </button>
-      <button class="btn btn-small btn-danger" onclick="logout()">
-        <span>🚪 Déconnexion</span>
-      </button>
-    </div>
+    <button class="btn btn-danger btn-small" onclick="signOut()">
+      <span>🚪 Déconnexion</span>
+    </button>
   </div>
 
-  <!-- Main App -->
-  <div class="hidden" id="main-app">
-    <header class="header">
-      <div class="logo-container">
-        <h1 class="logo">Discembed Creator</h1>
-        <div class="subtitle">Minou_Offciel • Version 2.0 • Cloud Sync</div>
-      </div>
-    </header>
+  <header class="header">
+    <div class="logo-container">
+      <h1 class="logo">Discembed Creator</h1>
+      <div class="subtitle">Minou_Offciel • Version 3.0 Cloud</div>
+    </div>
+  </header>
 
-    <div class="main-container">
-      <div class="panel">
-        <h2 class="section-header">
+  <div id="main-content" class="main-container" style="display: none;">
+    <div class="panel">
+      <h2 class="section-header">
+        <div class="section-title">
           <span class="section-icon">⚙️</span>
           Configuration
-        </h2>
-
-        <div class="form-group">
-          <label for="webhook">Webhook Discord</label>
-          <input type="text" id="webhook" placeholder="https://discord.com/api/webhooks/..." oninput="updateEmbed()" />
         </div>
-
-        <div class="form-group">
-          <label for="username">Nom du Bot</label>
-          <input type="text" id="username" placeholder="Discembed Bot" oninput="updateEmbed()" />
+        <div class="cloud-status">
+          <span id="cloud-icon" class="cloud-icon">☁️</span>
+          <span id="cloud-text">Cloud</span>
         </div>
+      </h2>
 
-        <div class="form-group">
-          <label for="title">Titre de l'Embed</label>
-          <input type="text" id="title" placeholder="📊 Votre titre ici..." oninput="updateEmbed()" />
-        </div>
-
-        <div class="form-group">
-          <label for="ranking-text">Contenu de l'Embed</label>
-          <textarea id="ranking-text" rows="6" placeholder="Écrivez votre contenu ici..." oninput="updateEmbed()"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="ranking-image">URL de l'Image</label>
-          <input type="text" id="ranking-image" placeholder="https://exemple.com/image.png" oninput="updateEmbed()" />
-        </div>
-
-        <div class="form-group">
-          <label for="image-upload">Upload une Image</label>
-          <input type="file" id="image-upload" accept="image/*" onchange="uploadImage(event)" />
-        </div>
-
-        <div class="form-group">
-          <label for="imgbb-api-key">Clé API ImgBB</label>
-          <input type="text" id="imgbb-api-key" placeholder="Votre clé API ImgBB" oninput="saveAPIKey()" />
-        </div>
-
-        <button class="btn btn-accent" onclick="showGallery()">
-          <span>🖼️ Galerie d'Images</span>
-        </button>
-
-        <div class="form-group">
-          <label for="mention-users">Mentions Utilisateurs (IDs)</label>
-          <input type="text" id="mention-users" placeholder="123456789, 987654321" oninput="updateEmbed()" />
-        </div>
-
-        <div class="form-group">
-          <label for="mention-roles">Mentions Rôles (IDs)</label>
-          <input type="text" id="mention-roles" placeholder="111222333, 444555666" oninput="updateEmbed()" />
-        </div>
-
-        <button class="btn btn-primary" onclick="sendEmbed()">
-          <span>🚀 Envoyer sur Discord</span>
-        </button>
-
-        <button class="btn btn-secondary" onclick="exportJSON()">
-          <span>📥 Exporter Configuration</span>
-        </button>
-
-        <input type="file" id="import-json" accept=".json" onchange="importJSON(event)" style="display: none;" />
-        <button class="btn btn-accent" onclick="document.getElementById('import-json').click()">
-          <span>📤 Importer Configuration</span>
-        </button>
-
-        <button class="btn btn-secondary" onclick="showHistory()">
-          <span>📊 Historique des Envois</span>
-        </button>
+      <div class="form-group">
+        <label for="webhook">Webhook Discord</label>
+        <input type="text" id="webhook" placeholder="https://discord.com/api/webhooks/..." oninput="updateEmbed()" />
       </div>
 
-      <div class="panel">
-        <h2 class="section-header">
+      <div class="form-group">
+        <label for="username">Nom du Bot</label>
+        <input type="text" id="username" placeholder="Discembed Bot" oninput="updateEmbed()" />
+      </div>
+
+      <div class="form-group">
+        <label for="title">Titre de l'Embed</label>
+        <input type="text" id="title" placeholder="📊 Votre titre ici..." oninput="updateEmbed()" />
+      </div>
+
+      <div class="form-group">
+        <label for="ranking-text">Contenu de l'Embed</label>
+        <textarea id="ranking-text" rows="6" placeholder="Écrivez votre contenu ici..." oninput="updateEmbed()"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ranking-image">URL de l'Image</label>
+        <input type="text" id="ranking-image" placeholder="https://exemple.com/image.png" oninput="updateEmbed()" />
+      </div>
+
+      <div class="form-group">
+        <label for="image-upload">Upload une Image</label>
+        <input type="file" id="image-upload" accept="image/*" onchange="uploadImage(event)" />
+      </div>
+
+      <div class="form-group">
+        <label for="imgbb-api-key">Clé API ImgBB</label>
+        <input type="text" id="imgbb-api-key" placeholder="Votre clé API ImgBB" oninput="saveAPIKey()" />
+      </div>
+
+      <button class="btn btn-accent" onclick="showGallery()">
+        <span>🖼️ Galerie d'Images</span>
+      </button>
+
+      <div class="form-group">
+        <label for="mention-users">Mentions Utilisateurs (IDs)</label>
+        <input type="text" id="mention-users" placeholder="123456789, 987654321" oninput="updateEmbed()" />
+      </div>
+
+      <div class="form-group">
+        <label for="mention-roles">Mentions Rôles (IDs)</label>
+        <input type="text" id="mention-roles" placeholder="111222333, 444555666" oninput="updateEmbed()" />
+      </div>
+
+      <button class="btn btn-primary" onclick="sendEmbed()">
+        <span>🚀 Envoyer sur Discord</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="saveConfigToCloud()">
+        <span>☁️ Sauvegarder dans le Cloud</span>
+      </button>
+
+      <!-- Section des configurations sauvegardées -->
+      <div class="saved-configs">
+        <h3 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>💾</span> Configurations Sauvegardées
+        </h3>
+        <div id="saved-configs-list"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-header">
+        <div class="section-title">
           <span class="section-icon">👁️</span>
           Aperçu Live
-        </h2>
-
-        <div class="preview-container">
-          <div id="mentions-preview" class="mentions-preview"></div>
-          <div id="preview-area"></div>
         </div>
+      </h2>
+
+      <div class="preview-container">
+        <div id="mentions-preview" class="mentions-preview"></div>
+        <div id="preview-area"></div>
       </div>
     </div>
   </div>
@@ -1040,26 +1014,26 @@
     </div>
   </div>
 
-  <!-- Modal History -->
-  <div class="modal" id="history-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">📊 Historique des Envois</h3>
-        <button class="close-button" onclick="hideHistory()">×</button>
-      </div>
-      <div id="history-content"></div>
-    </div>
-  </div>
-
   <script>
-    // Configuration API
-    const API_BASE = '/api.php'; // Changez selon votre configuration
-    
+    // Configuration Firebase avec VOTRE vraie configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2QK5JVPItb6h7EcyPGpuKwW3e3mny8rE",
+      authDomain: "budget-master-pro-27c23.firebaseapp.com",
+      projectId: "budget-master-pro-27c23",
+      storageBucket: "budget-master-pro-27c23.firebasestorage.app",
+      messagingSenderId: "625395489880",
+      appId: "1:625395489880:web:7976e8c8d86bf8afdafe2d",
+      measurementId: "G-C1E8Z4Q2ZG"
+    };
+
+    // Initialisation Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const analytics = firebase.analytics();
+
     // Variables globales
     let currentUser = null;
-    let authToken = null;
-    let currentEmbedId = null;
-    let configurations = [];
     let embed = {
       title: "",
       description: "",
@@ -1071,7 +1045,255 @@
     let mentionUsers = [];
     let mentionRoles = [];
 
-    // Utilitaires
+    // Écouteur d'état d'authentification
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        showMainApp();
+        loadUserData();
+        loadSavedConfigs();
+        updateCloudStatus(true);
+        console.log('Utilisateur connecté:', user.displayName);
+      } else {
+        currentUser = null;
+        showLoginScreen();
+        updateCloudStatus(false);
+        console.log('Utilisateur déconnecté');
+      }
+    });
+
+    function showLoginScreen() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('auth-section').style.display = 'none';
+      document.getElementById('main-content').style.display = 'none';
+    }
+
+    function showMainApp() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('auth-section').style.display = 'flex';
+      document.getElementById('main-content').style.display = 'grid';
+      document.getElementById('user-avatar').src = currentUser.photoURL;
+      document.getElementById('user-name').textContent = currentUser.displayName;
+    }
+
+    function updateCloudStatus(isConnected) {
+      const icon = document.getElementById('cloud-icon');
+      const text = document.getElementById('cloud-text');
+      const statusClass = isConnected ? 'status-online' : 'status-offline';
+      
+      icon.className = `cloud-icon ${statusClass}`;
+      text.className = `${statusClass}`;
+      text.textContent = isConnected ? 'Connecté' : 'Hors ligne';
+    }
+
+    async function signInWithGoogle() {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        
+        const result = await auth.signInWithPopup(provider);
+        showMessage("✅ Connexion réussie !", "success");
+        
+        // Analytics : Connexion utilisateur
+        analytics.logEvent('login', {
+          method: 'google'
+        });
+      } catch (error) {
+        console.error('Erreur de connexion:', error);
+        showMessage("❌ Erreur de connexion: " + error.message, "error");
+      }
+    }
+
+    async function signOut() {
+      try {
+        await auth.signOut();
+        showMessage("✅ Déconnexion réussie", "success");
+        
+        // Analytics : Déconnexion utilisateur
+        analytics.logEvent('logout');
+      } catch (error) {
+        console.error('Erreur de déconnexion:', error);
+        showMessage("❌ Erreur de déconnexion", "error");
+      }
+    }
+
+    async function saveConfigToCloud() {
+      if (!currentUser) {
+        showMessage("❌ Vous devez être connecté", "error");
+        return;
+      }
+
+      try {
+        const configName = prompt("Nom de la configuration:");
+        if (!configName) return;
+
+        const configData = {
+          name: configName,
+          webhook: document.getElementById("webhook").value.trim(),
+          username: document.getElementById("username").value.trim(),
+          title: document.getElementById("title").value.trim(),
+          description: document.getElementById("ranking-text").value.trim(),
+          image: document.getElementById("ranking-image").value.trim(),
+          mentionUsers: document.getElementById("mention-users").value.trim(),
+          mentionRoles: document.getElementById("mention-roles").value.trim(),
+          imgbbApiKey: document.getElementById("imgbb-api-key").value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          userId: currentUser.uid
+        };
+
+        await db.collection('configs').add(configData);
+        showMessage("✅ Configuration sauvegardée dans le cloud", "success");
+        loadSavedConfigs();
+        
+        // Analytics : Configuration sauvegardée
+        analytics.logEvent('save_config', {
+          config_name: configName
+        });
+      } catch (error) {
+        console.error('Erreur de sauvegarde:', error);
+        showMessage("❌ Erreur de sauvegarde: " + error.message, "error");
+      }
+    }
+
+    async function loadSavedConfigs() {
+      if (!currentUser) return;
+
+      try {
+        const snapshot = await db.collection('configs')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        const configsList = document.getElementById('saved-configs-list');
+        configsList.innerHTML = '';
+
+        snapshot.forEach(doc => {
+          const config = doc.data();
+          const configElement = createConfigElement(doc.id, config);
+          configsList.appendChild(configElement);
+        });
+
+        if (snapshot.empty) {
+          configsList.innerHTML = '<p style="text-align: center; color: var(--text-dim);">Aucune configuration sauvegardée</p>';
+        }
+      } catch (error) {
+        console.error('Erreur de chargement:', error);
+        showMessage("❌ Erreur de chargement des configurations", "error");
+      }
+    }
+
+    function createConfigElement(configId, config) {
+      const div = document.createElement('div');
+      div.className = 'config-item';
+      
+      const date = config.createdAt ? new Date(config.createdAt.toDate()).toLocaleDateString('fr-FR') : 'Date inconnue';
+      
+      div.innerHTML = `
+        <div class="config-info">
+          <div class="config-name">${config.name}</div>
+          <div class="config-date">Créé le ${date}</div>
+        </div>
+        <div class="config-actions">
+          <button class="btn btn-accent btn-small" onclick="loadConfigFromCloud('${configId}')">
+            <span>📂 Charger</span>
+          </button>
+          <button class="btn btn-danger btn-small" onclick="deleteConfigFromCloud('${configId}')">
+            <span>🗑️ Supprimer</span>
+          </button>
+        </div>
+      `;
+      
+      return div;
+    }
+
+    async function loadConfigFromCloud(configId) {
+      try {
+        const doc = await db.collection('configs').doc(configId).get();
+        
+        if (!doc.exists) {
+          showMessage("❌ Configuration introuvable", "error");
+          return;
+        }
+
+        const config = doc.data();
+        
+        document.getElementById("webhook").value = config.webhook || "";
+        document.getElementById("username").value = config.username || "";
+        document.getElementById("title").value = config.title || "";
+        document.getElementById("ranking-text").value = config.description || "";
+        document.getElementById("ranking-image").value = config.image || "";
+        document.getElementById("mention-users").value = config.mentionUsers || "";
+        document.getElementById("mention-roles").value = config.mentionRoles || "";
+        document.getElementById("imgbb-api-key").value = config.imgbbApiKey || "";
+
+        updateEmbed();
+        showMessage("✅ Configuration chargée", "success");
+        
+        // Analytics : Configuration chargée
+        analytics.logEvent('load_config', {
+          config_name: config.name
+        });
+      } catch (error) {
+        console.error('Erreur de chargement:', error);
+        showMessage("❌ Erreur de chargement", "error");
+      }
+    }
+
+    async function deleteConfigFromCloud(configId) {
+      if (!confirm('Êtes-vous sûr de vouloir supprimer cette configuration ?')) {
+        return;
+      }
+
+      try {
+        await db.collection('configs').doc(configId).delete();
+        showMessage("✅ Configuration supprimée", "success");
+        loadSavedConfigs();
+        
+        // Analytics : Configuration supprimée
+        analytics.logEvent('delete_config');
+      } catch (error) {
+        console.error('Erreur de suppression:', error);
+        showMessage("❌ Erreur de suppression", "error");
+      }
+    }
+
+    async function loadUserData() {
+      if (!currentUser) return;
+
+      try {
+        // Charger les données utilisateur (clé API, etc.)
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          if (userData.imgbbApiKey) {
+            document.getElementById("imgbb-api-key").value = userData.imgbbApiKey;
+          }
+        }
+      } catch (error) {
+        console.error('Erreur de chargement des données utilisateur:', error);
+      }
+    }
+
+    async function saveAPIKey() {
+      const key = document.getElementById("imgbb-api-key").value.trim();
+      
+      if (currentUser && key) {
+        try {
+          await db.collection('users').doc(currentUser.uid).set({
+            imgbbApiKey: key,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+          
+          showMessage("✅ Clé API sauvegardée dans le cloud", "success");
+        } catch (error) {
+          console.error('Erreur de sauvegarde de la clé API:', error);
+          showMessage("❌ Erreur de sauvegarde de la clé API", "error");
+        }
+      }
+    }
+
     function getFrenchDateTime() {
       return new Date().toLocaleString('fr-FR', {
         day: '2-digit',
@@ -1094,262 +1316,15 @@
       }, 4000);
     }
 
-    function isValidUrl(string) {
-      try {
-        new URL(string);
-        return string.startsWith('http://') || string.startsWith('https://');
-      } catch (_) {
-        return false;
-      }
-    }
-
-    // API Functions
-    async function apiCall(endpoint, method = 'GET', data = null) {
-      const options = {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-
-      if (authToken) {
-        options.headers['Authorization'] = `Bearer ${authToken}`;
-      }
-
-      if (data) {
-        options.body = JSON.stringify(data);
-      }
-
-      try {
-        const response = await fetch(`${API_BASE}/${endpoint}`, options);
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || 'Erreur API');
-        }
-
-        return result.data;
-      } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-      }
-    }
-
-    // Authentication Functions
-    async function login(email, password) {
-      try {
-        const data = await apiCall('login', 'POST', { email, password });
-        authToken = data.token;
-        currentUser = data.user;
-        localStorage.setItem('auth_token', authToken);
-        localStorage.setItem('current_user', JSON.stringify(currentUser));
-        showMainApp();
-        showMessage('✅ Connexion réussie !', 'success');
-        loadConfigurations();
-      } catch (error) {
-        showMessage(`❌ Erreur de connexion: ${error.message}`, 'error');
-      }
-    }
-
-    async function register(email, password, username) {
-      try {
-        const data = await apiCall('register', 'POST', { email, password, username });
-        authToken = data.token;
-        currentUser = data.user;
-        localStorage.setItem('auth_token', authToken);
-        localStorage.setItem('current_user', JSON.stringify(currentUser));
-        showMainApp();
-        showMessage('✅ Compte créé avec succès !', 'success');
-        loadConfigurations();
-      } catch (error) {
-        showMessage(`❌ Erreur d'inscription: ${error.message}`, 'error');
-      }
-    }
-
-    function logout() {
-      authToken = null;
-      currentUser = null;
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('current_user');
-      showAuthModal();
-      showMessage('✅ Déconnexion réussie', 'success');
-    }
-
-    // UI Functions
-    function showAuthModal() {
-      document.getElementById('auth-modal').classList.remove('hidden');
-      document.getElementById('main-app').classList.add('hidden');
-      document.getElementById('user-header').classList.add('hidden');
-    }
-
-    function showMainApp() {
-      document.getElementById('auth-modal').classList.add('hidden');
-      document.getElementById('main-app').classList.remove('hidden');
-      document.getElementById('user-header').classList.remove('hidden');
-      
-      // Mettre à jour les infos utilisateur
-      if (currentUser) {
-        document.getElementById('user-name').textContent = currentUser.username || 'Utilisateur';
-        document.getElementById('user-email').textContent = currentUser.email;
-        document.getElementById('user-avatar').textContent = (currentUser.username || currentUser.email).charAt(0).toUpperCase();
-      }
-    }
-
-    function showLoginForm() {
-      document.getElementById('auth-title').textContent = 'Connexion';
-      document.getElementById('login-form').classList.remove('hidden');
-      document.getElementById('register-form').classList.add('hidden');
-    }
-
-    function showRegisterForm() {
-      document.getElementById('auth-title').textContent = 'Inscription';
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('register-form').classList.remove('hidden');
-    }
-
-    // Configuration Functions
-    async function loadConfigurations() {
-      try {
-        const data = await apiCall('embeds');
-        configurations = data.embeds;
-        updateConfigSelector();
-        
-        // Charger la configuration par défaut
-        const defaultConfig = configurations.find(c => c.is_default);
-        if (defaultConfig) {
-          loadConfigurationData(defaultConfig);
-        }
-      } catch (error) {
-        showMessage(`❌ Erreur de chargement: ${error.message}`, 'error');
-      }
-    }
-
-    function updateConfigSelector() {
-      const selector = document.getElementById('config-selector');
-      selector.innerHTML = '<option value="">Nouvelle configuration</option>';
-      
-      configurations.forEach(config => {
-        const option = document.createElement('option');
-        option.value = config.id;
-        option.textContent = config.name + (config.is_default ? ' (Défaut)' : '');
-        selector.appendChild(option);
-      });
-    }
-
-    function loadConfigurationData(config) {
-      currentEmbedId = config.id;
-      document.getElementById('webhook').value = config.webhook || '';
-      document.getElementById('username').value = config.bot_username || '';
-      document.getElementById('title').value = config.title || '';
-      document.getElementById('ranking-text').value = config.description || '';
-      document.getElementById('ranking-image').value = config.image_url || '';
-      document.getElementById('mention-users').value = config.mention_users || '';
-      document.getElementById('mention-roles').value = config.mention_roles || '';
-      document.getElementById('imgbb-api-key').value = config.imgbb_api_key || '';
-      
-      // Mettre à jour le sélecteur
-      document.getElementById('config-selector').value = config.id;
-      
-      updateEmbed();
-    }
-
-    async function loadConfiguration() {
-      const selector = document.getElementById('config-selector');
-      const configId = selector.value;
-      
-      if (!configId) {
-        // Nouvelle configuration
-        currentEmbedId = null;
-        document.getElementById('webhook').value = '';
-        document.getElementById('username').value = 'Discembed Bot';
-        document.getElementById('title').value = '';
-        document.getElementById('ranking-text').value = '';
-        document.getElementById('ranking-image').value = '';
-        document.getElementById('mention-users').value = '';
-        document.getElementById('mention-roles').value = '';
-        updateEmbed();
-        return;
-      }
-      
-      try {
-        const data = await apiCall(`embeds/${configId}`);
-        loadConfigurationData(data.embed);
-        showMessage('✅ Configuration chargée', 'success');
-      } catch (error) {
-        showMessage(`❌ Erreur de chargement: ${error.message}`, 'error');
-      }
-    }
-
-    async function saveCurrentConfig() {
-      const configData = {
-        name: prompt('Nom de la configuration:', 'Ma configuration') || 'Configuration sans nom',
-        webhook: document.getElementById('webhook').value.trim(),
-        bot_username: document.getElementById('username').value.trim(),
-        title: document.getElementById('title').value.trim(),
-        description: document.getElementById('ranking-text').value.trim(),
-        image_url: document.getElementById('ranking-image').value.trim(),
-        mention_users: document.getElementById('mention-users').value.trim(),
-        mention_roles: document.getElementById('mention-roles').value.trim(),
-        imgbb_api_key: document.getElementById('imgbb-api-key').value.trim(),
-        is_default: false
-      };
-
-      try {
-        if (currentEmbedId) {
-          // Mettre à jour la configuration existante
-          await apiCall(`embeds/${currentEmbedId}`, 'PUT', configData);
-          showMessage('✅ Configuration mise à jour', 'success');
-        } else {
-          // Créer une nouvelle configuration
-          const data = await apiCall('embeds', 'POST', configData);
-          currentEmbedId = data.embed.id;
-          showMessage('✅ Configuration sauvegardée', 'success');
-        }
-        
-        loadConfigurations();
-      } catch (error) {
-        showMessage(`❌ Erreur de sauvegarde: ${error.message}`, 'error');
-      }
-    }
-
-    // Auto-save on change
-    let saveTimeout;
-    function autoSave() {
-      if (!currentEmbedId) return;
-      
-      clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(async () => {
-        const configData = {
-          webhook: document.getElementById('webhook').value.trim(),
-          bot_username: document.getElementById('username').value.trim(),
-          title: document.getElementById('title').value.trim(),
-          description: document.getElementById('ranking-text').value.trim(),
-          image_url: document.getElementById('ranking-image').value.trim(),
-          mention_users: document.getElementById('mention-users').value.trim(),
-          mention_roles: document.getElementById('mention-roles').value.trim(),
-          imgbb_api_key: document.getElementById('imgbb-api-key').value.trim()
-        };
-
-        try {
-          await apiCall(`embeds/${currentEmbedId}`, 'PUT', configData);
-        } catch (error) {
-          console.log('Auto-save failed:', error);
-        }
-      }, 2000);
-    }
-
     function updateEmbed() {
-      // Récupération des valeurs avec nettoyage
       const title = document.getElementById("title").value.trim();
       const description = document.getElementById("ranking-text").value.trim();
       const imageUrl = document.getElementById("ranking-image").value.trim();
       
-      // Mise à jour de l'embed avec validation
       embed.title = title || "Titre de l'embed";
       embed.description = description || "Description de l'embed";
       embed.color = 0x00d4ff;
       
-      // Image seulement si URL valide
       if (imageUrl && isValidUrl(imageUrl)) {
         embed.image = { url: imageUrl };
       } else {
@@ -1360,7 +1335,6 @@
         text: `Créé avec Discembed Creator x Minou_Offciel • ${getFrenchDateTime()}` 
       };
       
-      // Mise à jour des variables globales
       currentWebhook = document.getElementById("webhook").value.trim();
       currentUsername = document.getElementById("username").value.trim() || "Discembed Bot";
       
@@ -1371,7 +1345,6 @@
       mentionRoles = roleIds ? roleIds.split(",").map(id => id.trim()).filter(Boolean) : [];
       
       renderPreview();
-      autoSave();
     }
 
     function renderPreview() {
@@ -1389,13 +1362,11 @@
       const content = document.createElement("div");
       content.className = "embed-content";
       
-      // Construction du HTML avec validation
       let embedHTML = `
         <div class="embed-title">${embed.title}</div>
         <div class="embed-description">${embed.description}</div>
       `;
       
-      // Ajouter l'image seulement si elle existe et est valide
       if (embed.image && embed.image.url) {
         embedHTML += `<img class="embed-image" src="${embed.image.url}" onerror="this.style.display='none'" />`;
       }
@@ -1404,7 +1375,6 @@
       
       content.innerHTML = embedHTML;
 
-      // Affichage des mentions
       const combinedMentions = [
         ...mentionUsers.map(id => `<@${id}>`),
         ...mentionRoles.map(id => `<@&${id}>`)
@@ -1436,22 +1406,18 @@
       btn.disabled = true;
 
       try {
-        // Validation et nettoyage de l'embed
         const cleanEmbed = {};
 
-        // Titre (obligatoire pour un embed valide)
         const title = document.getElementById("title").value.trim();
         if (title) {
-          cleanEmbed.title = title.substring(0, 256); // Max 256 caractères
+          cleanEmbed.title = title.substring(0, 256);
         }
 
-        // Description
         const description = document.getElementById("ranking-text").value.trim();
         if (description) {
-          cleanEmbed.description = description.substring(0, 4096); // Max 4096 caractères
+          cleanEmbed.description = description.substring(0, 4096);
         }
 
-        // Si ni titre ni description, on refuse l'envoi
         if (!cleanEmbed.title && !cleanEmbed.description) {
           showMessage("❌ Veuillez remplir au moins le titre ou la description", "error");
           btn.innerHTML = originalHTML;
@@ -1459,24 +1425,19 @@
           return;
         }
 
-        // Couleur
         cleanEmbed.color = 0x00d4ff;
 
-        // Image (seulement si URL valide)
         const imageUrl = document.getElementById("ranking-image").value.trim();
         if (imageUrl && isValidUrl(imageUrl)) {
           cleanEmbed.image = { url: imageUrl };
         }
 
-        // Footer
         cleanEmbed.footer = {
           text: `Créé avec Discembed Creator x Minou_Offciel • ${getFrenchDateTime()}`
         };
 
-        // Timestamp
         cleanEmbed.timestamp = new Date().toISOString();
 
-        // Préparation du contenu avec mentions
         const content = [
           ...mentionUsers.map(id => `<@${id}>`),
           ...mentionRoles.map(id => `<@&${id}>`)
@@ -1486,17 +1447,13 @@
           embeds: [cleanEmbed]
         };
 
-        // Ajouter le nom d'utilisateur si spécifié
         if (currentUsername.trim()) {
-          payload.username = currentUsername.trim().substring(0, 80); // Max 80 caractères
+          payload.username = currentUsername.trim().substring(0, 80);
         }
 
-        // Ajouter le contenu seulement s'il y a des mentions
         if (content.trim()) {
-          payload.content = content.trim().substring(0, 2000); // Max 2000 caractères
+          payload.content = content.trim().substring(0, 2000);
         }
-
-        console.log('Payload envoyé:', JSON.stringify(payload, null, 2));
 
         const response = await fetch(currentWebhook, {
           method: "POST",
@@ -1509,55 +1466,25 @@
         if (response.ok || response.status === 204) {
           showMessage("✅ Embed envoyé avec succès !", "success");
           
-          // Log dans l'historique
-          if (authToken) {
-            try {
-              await apiCall('history', 'POST', {
-                webhook: currentWebhook,
-                title: cleanEmbed.title || '',
-                description: cleanEmbed.description || '',
-                image_url: imageUrl,
-                mentions: content,
-                status: 'success'
-              });
-            } catch (error) {
-              console.log('Failed to log history:', error);
-            }
-          }
+          // Analytics : Embed envoyé
+          analytics.logEvent('send_embed', {
+            has_image: !!cleanEmbed.image,
+            has_mentions: content.trim().length > 0
+          });
         } else {
           const errorText = await response.text();
           console.error('Erreur Discord:', response.status, errorText);
           
-          let errorMessage = '';
           if (response.status === 400) {
-            errorMessage = "❌ Données invalides - Vérifiez vos champs (titre/description requis)";
+            showMessage("❌ Données invalides - Vérifiez vos champs", "error");
           } else if (response.status === 401) {
-            errorMessage = "❌ Webhook non autorisé";
+            showMessage("❌ Webhook non autorisé", "error");
           } else if (response.status === 404) {
-            errorMessage = "❌ Webhook introuvable";
+            showMessage("❌ Webhook introuvable", "error");
           } else if (response.status === 429) {
-            errorMessage = "❌ Trop de requêtes - Attendez avant de réessayer";
+            showMessage("❌ Trop de requêtes - Attendez avant de réessayer", "error");
           } else {
-            errorMessage = `❌ Erreur ${response.status} - Vérifiez votre webhook`;
-          }
-          
-          showMessage(errorMessage, "error");
-          
-          // Log dans l'historique
-          if (authToken) {
-            try {
-              await apiCall('history', 'POST', {
-                webhook: currentWebhook,
-                title: cleanEmbed.title || '',
-                description: cleanEmbed.description || '',
-                image_url: imageUrl,
-                mentions: content,
-                status: 'error',
-                error_message: errorMessage
-              });
-            } catch (error) {
-              console.log('Failed to log history:', error);
-            }
+            showMessage(`❌ Erreur ${response.status} - Vérifiez votre webhook`, "error");
           }
         }
       } catch (error) {
@@ -1569,71 +1496,13 @@
       }
     }
 
-    function exportJSON() {
-      const title = document.getElementById("title").value.trim();
-      const description = document.getElementById("ranking-text").value.trim();
-      const imageUrl = document.getElementById("ranking-image").value.trim();
-      
-      const data = {
-        webhook: currentWebhook,
-        username: currentUsername,
-        title: title,
-        description: description,
-        image: imageUrl,
-        mentions_users: mentionUsers,
-        mentions_roles: mentionRoles,
-        imgbb_api_key: document.getElementById("imgbb-api-key").value.trim()
-      };
-      
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `discembed_config_${Date.now()}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      showMessage("✅ Configuration exportée", "success");
-    }
-
-    function importJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          document.getElementById("webhook").value = data.webhook || "";
-          document.getElementById("username").value = data.username || "";
-          document.getElementById("title").value = data.title || "";
-          document.getElementById("ranking-text").value = data.description || "";
-          document.getElementById("ranking-image").value = data.image || "";
-          document.getElementById("mention-users").value = (data.mentions_users || []).join(", ");
-          document.getElementById("mention-roles").value = (data.mentions_roles || []).join(", ");
-          
-          if (data.imgbb_api_key) {
-            document.getElementById("imgbb-api-key").value = data.imgbb_api_key;
-          }
-          
-          updateEmbed();
-          showMessage("✅ Configuration importée avec succès", "success");
-        } catch (error) {
-          console.error('Erreur de parsing JSON:', error);
-          showMessage("❌ Fichier JSON invalide", "error");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function saveAPIKey() {
-      const key = document.getElementById("imgbb-api-key").value.trim();
-      if (key) {
-        showMessage("✅ Clé API sauvegardée", "success");
+    function isValidUrl(string) {
+      try {
+        new URL(string);
+        return string.startsWith('http://') || string.startsWith('https://');
+      } catch (_) {
+        return false;
       }
-      autoSave();
     }
 
     async function uploadImage(event) {
@@ -1647,7 +1516,6 @@
         return;
       }
 
-      // Vérifier la taille du fichier (max 32MB)
       if (file.size > 32 * 1024 * 1024) {
         showMessage("❌ Fichier trop volumineux (max 32MB)", "error");
         return;
@@ -1673,21 +1541,13 @@
             const imageUrl = data.data.url;
             document.getElementById('ranking-image').value = imageUrl;
             updateEmbed();
-            
-            // Sauvegarder dans la galerie cloud
-            if (authToken) {
-              try {
-                await apiCall('images', 'POST', {
-                  image_url: imageUrl,
-                  original_filename: file.name,
-                  imgbb_delete_url: data.data.delete_url
-                });
-              } catch (error) {
-                console.log('Failed to save image to gallery:', error);
-              }
-            }
-            
+            await saveImageToGallery(imageUrl);
             showMessage("✅ Image uploadée avec succès !", "success");
+            
+            // Analytics : Image uploadée
+            analytics.logEvent('upload_image', {
+              file_size: file.size
+            });
           } else {
             console.error('Erreur ImgBB:', data);
             showMessage("❌ Erreur lors de l'upload - Vérifiez votre clé API", "error");
@@ -1701,30 +1561,48 @@
       reader.readAsDataURL(file);
     }
 
+    async function saveImageToGallery(url) {
+      if (!currentUser) return;
+
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('gallery').add({
+          url: url,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Erreur de sauvegarde dans la galerie:', error);
+      }
+    }
+
     async function renderGallery() {
       const gallery = document.getElementById("imgbb-gallery");
       gallery.innerHTML = "";
 
-      if (!authToken) {
+      if (!currentUser) {
         gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Connectez-vous pour voir votre galerie</p>';
         return;
       }
 
       try {
-        const data = await apiCall('images');
-        const images = data.images;
+        const snapshot = await db.collection('users')
+          .doc(currentUser.uid)
+          .collection('gallery')
+          .orderBy('createdAt', 'desc')
+          .limit(50)
+          .get();
 
-        if (images.length === 0) {
+        if (snapshot.empty) {
           gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Aucune image dans la galerie</p>';
           return;
         }
 
-        images.forEach(imageData => {
+        snapshot.forEach(doc => {
+          const imageData = doc.data();
           const img = document.createElement("img");
-          img.src = imageData.image_url;
-          img.title = `Cliquer pour utiliser cette image${imageData.original_filename ? ` (${imageData.original_filename})` : ''}`;
+          img.src = imageData.url;
+          img.title = "Cliquer pour utiliser cette image";
           img.onclick = () => {
-            document.getElementById("ranking-image").value = imageData.image_url;
+            document.getElementById("ranking-image").value = imageData.url;
             updateEmbed();
             hideGallery();
             showMessage("✅ Image sélectionnée", "success");
@@ -1732,8 +1610,8 @@
           gallery.appendChild(img);
         });
       } catch (error) {
+        console.error('Erreur de chargement de la galerie:', error);
         gallery.innerHTML = '<p style="text-align: center; color: var(--text-dim); grid-column: 1 / -1;">Erreur de chargement de la galerie</p>';
-        console.error('Error loading gallery:', error);
       }
     }
 
@@ -1746,89 +1624,11 @@
       document.getElementById("gallery-modal").style.display = "none";
     }
 
-    async function showHistory() {
-      if (!authToken) {
-        showMessage("❌ Connectez-vous pour voir l'historique", "error");
-        return;
-      }
-
-      document.getElementById("history-modal").style.display = "flex";
-      const content = document.getElementById("history-content");
-      content.innerHTML = '<p style="text-align: center;">Chargement...</p>';
-
-      try {
-        const data = await apiCall('history');
-        const history = data.history;
-
-        if (history.length === 0) {
-          content.innerHTML = '<p style="text-align: center; color: var(--text-dim);">Aucun envoi dans l\'historique</p>';
-          return;
-        }
-
-        let historyHTML = '<div style="max-height: 400px; overflow-y: auto;">';
-        history.forEach(entry => {
-          const date = new Date(entry.sent_at).toLocaleString('fr-FR');
-          const status = entry.status === 'success' ? '✅' : '❌';
-          const statusColor = entry.status === 'success' ? 'var(--success)' : 'var(--danger)';
-          
-          historyHTML += `
-            <div style="padding: 1rem; margin-bottom: 1rem; background: var(--bg-light); border-radius: 12px; border-left: 4px solid ${statusColor};">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 600;">${status} ${entry.title || 'Embed sans titre'}</span>
-                <span style="font-size: 0.8rem; color: var(--text-dim);">${date}</span>
-              </div>
-              ${entry.description ? `<p style="color: var(--text-dim); margin-bottom: 0.5rem;">${entry.description.substring(0, 100)}${entry.description.length > 100 ? '...' : ''}</p>` : ''}
-              ${entry.mentions ? `<p style="color: var(--primary); font-size: 0.8rem;">📢 ${entry.mentions}</p>` : ''}
-              ${entry.error_message ? `<p style="color: var(--danger); font-size: 0.8rem;">❌ ${entry.error_message}</p>` : ''}
-            </div>
-          `;
-        });
-        historyHTML += '</div>';
-
-        content.innerHTML = historyHTML;
-      } catch (error) {
-        content.innerHTML = '<p style="text-align: center; color: var(--danger);">Erreur de chargement de l\'historique</p>';
-        console.error('Error loading history:', error);
-      }
-    }
-
-    function hideHistory() {
-      document.getElementById("history-modal").style.display = "none";
-    }
-
-    // Event Listeners
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      await login(email, password);
-    });
-
-    document.getElementById('register-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('register-email').value;
-      const username = document.getElementById('register-username').value;
-      const password = document.getElementById('register-password').value;
-      const confirmPassword = document.getElementById('register-password-confirm').value;
-      
-      if (password !== confirmPassword) {
-        showMessage('❌ Les mots de passe ne correspondent pas', 'error');
-        return;
-      }
-      
-      await register(email, password, username);
-    });
-
-    // Fermer les modals en cliquant à l'extérieur
+    // Fermer la modal en cliquant à l'extérieur
     window.onclick = function(event) {
-      const galleryModal = document.getElementById("gallery-modal");
-      const historyModal = document.getElementById("history-modal");
-      
-      if (event.target === galleryModal) {
+      const modal = document.getElementById("gallery-modal");
+      if (event.target === modal) {
         hideGallery();
-      }
-      if (event.target === historyModal) {
-        hideHistory();
       }
     }
 
@@ -1836,7 +1636,6 @@
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
         hideGallery();
-        hideHistory();
       }
       if (event.ctrlKey && event.key === 'Enter') {
         sendEmbed();
@@ -1845,27 +1644,8 @@
 
     // Initialisation
     document.addEventListener('DOMContentLoaded', () => {
-      // Vérifier si l'utilisateur est déjà connecté
-      const savedToken = localStorage.getItem('auth_token');
-      const savedUser = localStorage.getItem('current_user');
-      
-      if (savedToken && savedUser) {
-        authToken = savedToken;
-        currentUser = JSON.parse(savedUser);
-        showMainApp();
-        loadConfigurations();
-      } else {
-        showAuthModal();
-      }
-      
       updateEmbed();
-      
-      // Animation d'entrée
-      setTimeout(() => {
-        document.querySelectorAll('.panel').forEach((panel, index) => {
-          panel.style.animation = `slideUp 0.6s ease ${index * 0.2}s both`;
-        });
-      }, 100);
+      console.log('🚀 Discembed Creator initialisé avec Firebase');
     });
   </script>
 </body>
